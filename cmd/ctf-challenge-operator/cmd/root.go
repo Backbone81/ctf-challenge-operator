@@ -26,9 +26,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:          "ctf-operator",
-	Short:        "This operator helps in running CTFs.",
-	Long:         `This operator helps in running CTFs.`,
+	Use:          "ctf-challenge-operator",
+	Short:        "This operator manages CTF challenge instances.",
+	Long:         `This operator manages CTF challenge instances.`,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		logger, zapLogger, err := utils.CreateLogger(logLevel, enableDeveloperMode)
@@ -74,8 +74,6 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -90,7 +88,7 @@ func init() {
 		&cfgFile,
 		"config",
 		"",
-		"config file (default is $HOME/.ctf-operator.yaml)",
+		"config file (default is $HOME/.ctf-challenge-operator.yaml)",
 	)
 	rootCmd.PersistentFlags().BoolVar(
 		&enableDeveloperMode,
@@ -126,36 +124,31 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(
 		&leaderElectionNamespace,
 		"leader-election-namespace",
-		"ctf-operator",
+		"ctf-challenge-operator",
 		"The namespace in which leader election should happen.",
 	)
 	rootCmd.PersistentFlags().StringVar(
 		&leaderElectionId,
 		"leader-election-id",
-		"ctf-operator",
+		"ctf-challenge-operator",
 		"The ID to use for leader election.",
 	)
 }
 
-// initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
-		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".ctf-operator" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".ctf-operator")
+		viper.SetConfigName(".ctf-challenge-operator")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	viper.AutomaticEnv()
 
-	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
