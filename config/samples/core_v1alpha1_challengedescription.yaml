@@ -1,0 +1,9 @@
+apiVersion: core.ctf.backbone81/v1alpha1
+kind: ChallengeDescription
+metadata:
+  labels:
+    app.kubernetes.io/name: ctf-challenge-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: challengedescription-sample
+spec:
+  # TODO(user): Add fields here

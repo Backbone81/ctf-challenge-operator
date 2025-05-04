@@ -1,0 +1,6 @@
+## Append samples of your project ##
+resources:
+- core_v1alpha1_challengedescription.yaml
+- core_v1alpha1_challengeinstance.yaml
+- core_v1alpha1_apikey.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples
