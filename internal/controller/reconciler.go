@@ -60,7 +60,7 @@ func WithAPIKeyReconciler() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		reconciler.subReconcilers = append(
 			reconciler.subReconcilers,
-			apikey.NewReconciler(reconciler.client),
+			apikey.NewReconciler(reconciler.client, apikey.WithDefaultReconcilers()),
 		)
 	}
 }
@@ -70,7 +70,7 @@ func WithChallengeInstanceReconciler() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		reconciler.subReconcilers = append(
 			reconciler.subReconcilers,
-			challengeinstance.NewReconciler(reconciler.client),
+			challengeinstance.NewReconciler(reconciler.client, challengeinstance.WithDefaultReconcilers()),
 		)
 	}
 }

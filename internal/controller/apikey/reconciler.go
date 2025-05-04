@@ -82,11 +82,18 @@ type ReconcilerOption func(reconciler *Reconciler)
 func WithDefaultReconcilers() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		WithStatusReconciler()(reconciler)
+		WithDeleteReconciler()(reconciler)
 	}
 }
 
 func WithStatusReconciler() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		reconciler.subReconcilers = append(reconciler.subReconcilers, NewStatusReconciler(reconciler.client))
+	}
+}
+
+func WithDeleteReconciler() ReconcilerOption {
+	return func(reconciler *Reconciler) {
+		reconciler.subReconcilers = append(reconciler.subReconcilers, NewDeleteReconciler(reconciler.client))
 	}
 }

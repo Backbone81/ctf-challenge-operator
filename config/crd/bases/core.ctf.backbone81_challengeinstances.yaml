@@ -39,13 +39,22 @@ spec:
           spec:
             description: ChallengeInstanceSpec defines the desired state of ChallengeInstance.
             properties:
-              foo:
-                description: Foo is an example field of ChallengeInstance. Edit challengeinstance_types.go
-                  to remove/update
-                type: string
+              expirationSeconds:
+                description: ExpirationSeconds is the requested duration of validity
+                  of the Challenge instance.
+                format: int64
+                type: integer
             type: object
           status:
             description: ChallengeInstanceStatus defines the observed state of ChallengeInstance.
+            properties:
+              expirationTimestamp:
+                description: ExpirationTimestamp is the time of expiration of the
+                  challenge instance.
+                format: date-time
+                type: string
+            required:
+            - expirationTimestamp
             type: object
         type: object
     served: true

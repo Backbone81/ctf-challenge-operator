@@ -4,26 +4,25 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // APIKeySpec defines the desired state of APIKey.
 type APIKeySpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of APIKey. Edit apikey_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// ExpirationSeconds is the requested duration of validity of the API key.
+	// +optional
+	ExpirationSeconds *int64 `json:"expirationSeconds"`
 }
 
 // APIKeyStatus defines the observed state of APIKey.
 type APIKeyStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Key is the opaque API key.
+	Key string `json:"token"`
+
+	// ExpirationTimestamp is the time of expiration of the returned API key.
+	ExpirationTimestamp metav1.Time `json:"expirationTimestamp"`
 }
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Expiration",type="string",JSONPath=".status.expirationTimestamp",description="The expiration timestamp of the API key"
 
 // APIKey is the Schema for the apikeys API.
 type APIKey struct {

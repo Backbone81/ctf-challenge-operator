@@ -4,22 +4,17 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
-
 // ChallengeInstanceSpec defines the desired state of ChallengeInstance.
 type ChallengeInstanceSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of ChallengeInstance. Edit challengeinstance_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// ExpirationSeconds is the requested duration of validity of the Challenge instance.
+	// +optional
+	ExpirationSeconds *int64 `json:"expirationSeconds"`
 }
 
 // ChallengeInstanceStatus defines the observed state of ChallengeInstance.
 type ChallengeInstanceStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// ExpirationTimestamp is the time of expiration of the challenge instance.
+	ExpirationTimestamp metav1.Time `json:"expirationTimestamp"`
 }
 
 // +kubebuilder:object:root=true
