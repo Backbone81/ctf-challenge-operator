@@ -8,7 +8,6 @@ rules:
   - core.ctf.backbone81
   resources:
   - apikeys
-  - challengedescriptions
   - challengeinstances
   verbs:
   - create
@@ -22,7 +21,6 @@ rules:
   - core.ctf.backbone81
   resources:
   - apikeys/finalizers
-  - challengedescriptions/finalizers
   - challengeinstances/finalizers
   verbs:
   - update
@@ -30,7 +28,6 @@ rules:
   - core.ctf.backbone81
   resources:
   - apikeys/status
-  - challengedescriptions/status
   - challengeinstances/status
   verbs:
   - get

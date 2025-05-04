@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/backbone81/ctf-challenge-operator/internal/controller"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -62,7 +64,13 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("setting up manager: %w", err)
 		}
 
-		// +kubebuilder:scaffold:builder
+		reconciler := controller.NewReconciler(
+			utils.NewLoggingClient(mgr.GetClient(), logger),
+			controller.WithDefaultReconcilers(),
+		)
+		if err := reconciler.SetupWithManager(mgr); err != nil {
+			return fmt.Errorf("setting up reconciler with manager: %w", err)
+		}
 
 		if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 			return fmt.Errorf("setting up health check: %w", err)
@@ -107,7 +115,8 @@ func init() {
 		&metricsBindAddress,
 		"metrics-bind-address",
 		"0",
-		"The address the metrics endpoint binds to. Use :8443 for HTTPS or :8080 for HTTP, or leave as 0 to disable the metrics service.",
+		"The address the metrics endpoint binds to. Use :8443 for HTTPS or :8080 for HTTP, or leave as 0 "+
+			"to disable the metrics service.",
 	)
 	rootCmd.PersistentFlags().StringVar(
 		&healthProbeBindAddress,
@@ -119,7 +128,8 @@ func init() {
 		&leaderElectionEnabled,
 		"leader-election-enabled",
 		false,
-		"Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.",
+		"Enable leader election for controller manager. Enabling this will ensure there is only one "+
+			"active controller manager.",
 	)
 	rootCmd.PersistentFlags().StringVar(
 		&leaderElectionNamespace,
