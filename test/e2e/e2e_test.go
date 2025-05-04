@@ -27,7 +27,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	"github.com/Backbone81/ctf-challenge-operator/test/utils"
+	"github.com/backbone81/ctf-challenge-operator/test/utils"
 )
 
 // namespace where the project is deployed in

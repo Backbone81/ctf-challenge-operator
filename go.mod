@@ -1,4 +1,4 @@
-module github.com/Backbone81/ctf-challenge-operator
+module github.com/backbone81/ctf-challenge-operator
 
 go 1.23.0
 
