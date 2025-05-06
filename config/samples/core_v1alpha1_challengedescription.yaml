@@ -1,9 +1,30 @@
 apiVersion: core.ctf.backbone81/v1alpha1
 kind: ChallengeDescription
 metadata:
-  labels:
-    app.kubernetes.io/name: ctf-challenge-operator
-    app.kubernetes.io/managed-by: kustomize
   name: challengedescription-sample
 spec:
-  # TODO(user): Add fields here
+  title: Sample Challenge
+  text: This is a sample challenge.
+  value: 100
+  category: Web Exploitation
+  hints:
+    - text: Try something clever.
+      cost: 10
+  manifests:
+    - apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: challenge-deployment
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: challenge
+        template:
+          metadata:
+            labels:
+              app: challenge
+          spec:
+            containers:
+              - name: challenge-container
+                image: nginx

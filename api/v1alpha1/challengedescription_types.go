@@ -2,28 +2,65 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
-
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // ChallengeDescriptionSpec defines the desired state of ChallengeDescription.
 type ChallengeDescriptionSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Title is the name of the challenge
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Title string `json:"title"`
 
-	// Foo is an example field of ChallengeDescription. Edit challengedescription_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Text is the content of the challenge
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Text string `json:"text"`
+
+	// Category is the category this challenge belongs to.
+	// +kubebuilder:validation:Optional
+	Category string `json:"category"`
+
+	// Value is the number of points which are added upon solving the challenge.
+	// +kubebuilder:default=0
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Minimum=0
+	Value int `json:"value"`
+
+	// Hints provides a list of hints to help solve the challenge.
+	// +kubebuilder:validation:Optional
+	Hints []ChallengeHint `json:"hints"`
+
+	// Manifests provide the Kubernetes manifests which should be created when a new instance of the challenge is
+	// requested. The manifests are placed in a dedicated namespace. The namespace provided in those manifests is
+	// overwritten.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinItems=1
+	Manifests []runtime.RawExtension `json:"manifests"`
+}
+
+type ChallengeHint struct {
+	// Text is the content of the hint.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Text string `json:"text"`
+
+	// Cost is the number of points which are to be deducted from the overall score if this hint is being used.
+	// +kubebuilder:default=0
+	// +kubebuilder:validation:Optional
+	// +kubebuilder:validation:Minimum=0
+	Cost int `json:"cost"`
 }
 
 // ChallengeDescriptionStatus defines the observed state of ChallengeDescription.
-type ChallengeDescriptionStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-}
+type ChallengeDescriptionStatus struct{}
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Title",type="string",JSONPath=".spec.title"
+// +kubebuilder:printcolumn:name="Category",type="string",JSONPath=".spec.category"
+// +kubebuilder:printcolumn:name="Value",type="integer",JSONPath=".spec.value"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // ChallengeDescription is the Schema for the challengedescriptions API.
 type ChallengeDescription struct {

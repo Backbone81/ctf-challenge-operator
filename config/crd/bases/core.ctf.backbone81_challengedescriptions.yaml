@@ -14,7 +14,20 @@ spec:
     singular: challengedescription
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .spec.title
+      name: Title
+      type: string
+    - jsonPath: .spec.category
+      name: Category
+      type: string
+    - jsonPath: .spec.value
+      name: Value
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: ChallengeDescription is the Schema for the challengedescriptions
@@ -40,10 +53,55 @@ spec:
           spec:
             description: ChallengeDescriptionSpec defines the desired state of ChallengeDescription.
             properties:
-              foo:
-                description: Foo is an example field of ChallengeDescription. Edit
-                  challengedescription_types.go to remove/update
+              category:
+                description: Category is the category this challenge belongs to.
                 type: string
+              hints:
+                description: Hints provides a list of hints to help solve the challenge.
+                items:
+                  properties:
+                    cost:
+                      default: 0
+                      description: Cost is the number of points which are to be deducted
+                        from the overall score if this hint is being used.
+                      minimum: 0
+                      type: integer
+                    text:
+                      description: Text is the content of the hint.
+                      minLength: 1
+                      type: string
+                  required:
+                  - text
+                  type: object
+                type: array
+              manifests:
+                description: |-
+                  Manifests provide the Kubernetes manifests which should be created when a new instance of the challenge is
+                  requested. The manifests are placed in a dedicated namespace. The namespace provided in those manifests is
+                  overwritten.
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                minItems: 1
+                type: array
+              text:
+                description: Text is the content of the challenge
+                minLength: 1
+                type: string
+              title:
+                description: Title is the name of the challenge
+                minLength: 1
+                type: string
+              value:
+                default: 0
+                description: Value is the number of points which are added upon solving
+                  the challenge.
+                minimum: 0
+                type: integer
+            required:
+            - manifests
+            - text
+            - title
             type: object
           status:
             description: ChallengeDescriptionStatus defines the observed state of
