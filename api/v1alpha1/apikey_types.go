@@ -22,7 +22,8 @@ type APIKeyStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Expiration",type="string",JSONPath=".status.expirationTimestamp",description="The expiration timestamp of the API key"
+// +kubebuilder:printcolumn:name="Expiration",type="string",format="date-time",JSONPath=".status.expirationTimestamp"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // APIKey is the Schema for the apikeys API.
 type APIKey struct {

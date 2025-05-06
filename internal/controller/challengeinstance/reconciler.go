@@ -7,7 +7,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances,verbs=get;list;watch;create;update;patch;delete
@@ -44,8 +43,6 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 // Reconcile is the main reconciler function.
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = ctrllog.FromContext(ctx)
-
 	challengeInstance, err := r.getChallengeInstance(ctx, req)
 	if err != nil {
 		return ctrl.Result{}, err
@@ -85,11 +82,18 @@ type ReconcilerOption func(reconciler *Reconciler)
 func WithDefaultReconcilers() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		WithStatusReconciler()(reconciler)
+		WithDeleteReconciler()(reconciler)
 	}
 }
 
 func WithStatusReconciler() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		reconciler.subReconcilers = append(reconciler.subReconcilers, NewStatusReconciler(reconciler.client))
+	}
+}
+
+func WithDeleteReconciler() ReconcilerOption {
+	return func(reconciler *Reconciler) {
+		reconciler.subReconcilers = append(reconciler.subReconcilers, NewDeleteReconciler(reconciler.client))
 	}
 }

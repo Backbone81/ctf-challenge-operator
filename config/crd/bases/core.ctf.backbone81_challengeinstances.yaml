@@ -14,7 +14,15 @@ spec:
     singular: challengeinstance
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - format: date-time
+      jsonPath: .status.expirationTimestamp
+      name: Expiration
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: ChallengeInstance is the Schema for the challengeinstances API.

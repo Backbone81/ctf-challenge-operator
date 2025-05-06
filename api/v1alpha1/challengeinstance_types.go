@@ -19,6 +19,8 @@ type ChallengeInstanceStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
+// +kubebuilder:printcolumn:name="Expiration",type="string",format="date-time",JSONPath=".status.expirationTimestamp"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // ChallengeInstance is the Schema for the challengeinstances API.
 type ChallengeInstance struct {

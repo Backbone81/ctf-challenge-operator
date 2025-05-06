@@ -15,10 +15,13 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - description: The expiration timestamp of the API key
+    - format: date-time
       jsonPath: .status.expirationTimestamp
       name: Expiration
       type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
     name: v1alpha1
     schema:
       openAPIV3Schema:

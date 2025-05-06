@@ -2,6 +2,8 @@ package challengeinstance
 
 import (
 	"context"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -29,5 +31,22 @@ func (r *StatusReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *build
 
 // Reconcile is the main reconciler function.
 func (r *StatusReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
+	updateStatus := false
+
+	// calculate expiration timestamp
+	if challengeInstance.Status.ExpirationTimestamp.IsZero() {
+		expirationSeconds := int64(15 * 60) // default is 15 minutes
+		if challengeInstance.Spec.ExpirationSeconds != nil {
+			expirationSeconds = *challengeInstance.Spec.ExpirationSeconds
+		}
+		challengeInstance.Status.ExpirationTimestamp = metav1.NewTime(time.Now().Add(time.Duration(expirationSeconds) * time.Second))
+		updateStatus = true
+	}
+
+	if updateStatus {
+		if err := r.client.Status().Update(ctx, challengeInstance); err != nil {
+			return ctrl.Result{}, err
+		}
+	}
 	return ctrl.Result{}, nil
 }
