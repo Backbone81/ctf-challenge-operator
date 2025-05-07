@@ -3,4 +3,5 @@ kind: ChallengeInstance
 metadata:
   name: challengeinstance-sample
 spec:
-  # TODO(user): Add fields here
+  challengeDescription:
+    name: challengedescription-sample

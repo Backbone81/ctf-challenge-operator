@@ -88,6 +88,7 @@ func WithDefaultReconcilers() ReconcilerOption {
 		WithAddFinalizerReconciler()(reconciler)
 		WithStatusReconciler()(reconciler)
 		WithNamespaceReconciler()(reconciler)
+		WithManifestsReconciler()(reconciler)
 		WithRemoveFinalizerReconciler()(reconciler)
 
 		// The delete reconciler must be last, because the other reconcilers behave differently when the resource is
@@ -123,5 +124,11 @@ func WithAddFinalizerReconciler() ReconcilerOption {
 func WithRemoveFinalizerReconciler() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		reconciler.subReconcilers = append(reconciler.subReconcilers, NewRemoveFinalizerReconciler(reconciler.client))
+	}
+}
+
+func WithManifestsReconciler() ReconcilerOption {
+	return func(reconciler *Reconciler) {
+		reconciler.subReconcilers = append(reconciler.subReconcilers, NewManifestsReconciler(reconciler.client))
 	}
 }
