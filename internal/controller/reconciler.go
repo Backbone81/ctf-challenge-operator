@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -48,10 +49,10 @@ type SubReconciler interface {
 type ReconcilerOption func(reconciler *Reconciler)
 
 // WithDefaultReconcilers returns a reconciler option which enables the default sub-reconcilers.
-func WithDefaultReconcilers() ReconcilerOption {
+func WithDefaultReconcilers(recorder record.EventRecorder) ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		WithAPIKeyReconciler()(reconciler)
-		WithChallengeInstanceReconciler()(reconciler)
+		WithChallengeInstanceReconciler(recorder)(reconciler)
 	}
 }
 
@@ -66,11 +67,11 @@ func WithAPIKeyReconciler() ReconcilerOption {
 }
 
 // WithChallengeInstanceReconciler returns a reconciler option which enables the ChallengeInstance sub-reconciler.
-func WithChallengeInstanceReconciler() ReconcilerOption {
+func WithChallengeInstanceReconciler(recorder record.EventRecorder) ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		reconciler.subReconcilers = append(
 			reconciler.subReconcilers,
-			challengeinstance.NewReconciler(reconciler.client, challengeinstance.WithDefaultReconcilers()),
+			challengeinstance.NewReconciler(reconciler.client, challengeinstance.WithDefaultReconcilers(recorder)),
 		)
 	}
 }

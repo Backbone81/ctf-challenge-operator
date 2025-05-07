@@ -30,13 +30,14 @@ func (r *DeleteReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *build
 
 // Reconcile is the main reconciler function.
 func (r *DeleteReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
+	if !challengeInstance.DeletionTimestamp.IsZero() {
+		// We do not delete the resource when the resource is already being deleted.
+		return ctrl.Result{}, nil
+	}
+
 	if challengeInstance.Status.ExpirationTimestamp.Time.Before(time.Now()) {
 		if err := r.client.Delete(ctx, challengeInstance); err != nil {
-			// It can happen that the resource is already deleted. When the expiration is hit, all sub-reconcilers are
-			// run and at last the delete reconciler will mark the resource for deletion. Deletion will not happen,
-			// as we have a finalizer set. Another reconcile run is done and before the delete reconciler is run, the
-			// finalizer is removed. Kubernetes then deletes the resource before the delete reconciler runs again.
-			return ctrl.Result{}, client.IgnoreNotFound(err)
+			return ctrl.Result{}, err
 		}
 		return ctrl.Result{}, nil
 	}

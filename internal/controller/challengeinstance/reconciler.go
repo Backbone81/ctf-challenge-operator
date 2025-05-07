@@ -3,6 +3,8 @@ package challengeinstance
 import (
 	"context"
 
+	"k8s.io/client-go/tools/record"
+
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
@@ -16,6 +18,7 @@ var (
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances/finalizers,verbs=update
+// +kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
 
 // Reconciler provides functionality for provisioning challenge instances.
 type Reconciler struct {
@@ -83,12 +86,12 @@ type SubReconciler interface {
 type ReconcilerOption func(reconciler *Reconciler)
 
 // WithDefaultReconcilers returns a reconciler option which enables the default sub-reconcilers.
-func WithDefaultReconcilers() ReconcilerOption {
+func WithDefaultReconcilers(recorder record.EventRecorder) ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		WithAddFinalizerReconciler()(reconciler)
 		WithStatusReconciler()(reconciler)
 		WithNamespaceReconciler()(reconciler)
-		WithManifestsReconciler()(reconciler)
+		WithManifestsReconciler(recorder)(reconciler)
 		WithRemoveFinalizerReconciler()(reconciler)
 
 		// The delete reconciler must be last, because the other reconcilers behave differently when the resource is
@@ -127,8 +130,8 @@ func WithRemoveFinalizerReconciler() ReconcilerOption {
 	}
 }
 
-func WithManifestsReconciler() ReconcilerOption {
+func WithManifestsReconciler(recorder record.EventRecorder) ReconcilerOption {
 	return func(reconciler *Reconciler) {
-		reconciler.subReconcilers = append(reconciler.subReconcilers, NewManifestsReconciler(reconciler.client))
+		reconciler.subReconcilers = append(reconciler.subReconcilers, NewManifestsReconciler(reconciler.client, recorder))
 	}
 }

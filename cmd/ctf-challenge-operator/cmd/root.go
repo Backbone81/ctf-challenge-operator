@@ -66,7 +66,7 @@ var rootCmd = &cobra.Command{
 
 		reconciler := controller.NewReconciler(
 			utils.NewLoggingClient(mgr.GetClient(), logger),
-			controller.WithDefaultReconcilers(),
+			controller.WithDefaultReconcilers(mgr.GetEventRecorderFor("challenge-instance")),
 		)
 		if err := reconciler.SetupWithManager(mgr); err != nil {
 			return fmt.Errorf("setting up reconciler with manager: %w", err)

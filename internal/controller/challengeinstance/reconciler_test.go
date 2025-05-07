@@ -3,6 +3,8 @@ package challengeinstance_test
 import (
 	"time"
 
+	"k8s.io/client-go/tools/record"
+
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -18,7 +20,7 @@ var _ = Describe("ChallengeInstance Reconciler", func() {
 	var reconciler *challengeinstance.Reconciler
 
 	BeforeEach(func() {
-		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithDefaultReconcilers())
+		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithDefaultReconcilers(record.NewFakeRecorder(5)))
 	})
 
 	AfterEach(func() {

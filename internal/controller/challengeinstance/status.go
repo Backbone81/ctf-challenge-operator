@@ -32,6 +32,11 @@ func (r *StatusReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *build
 
 // Reconcile is the main reconciler function.
 func (r *StatusReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
+	if !challengeInstance.DeletionTimestamp.IsZero() {
+		// We do not update the status when the resource is already being deleted.
+		return ctrl.Result{}, nil
+	}
+
 	updateStatus := false
 
 	// calculate expiration timestamp
