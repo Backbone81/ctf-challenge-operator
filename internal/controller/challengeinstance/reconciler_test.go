@@ -1,10 +1,11 @@
 package challengeinstance_test
 
 import (
+	"time"
+
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
