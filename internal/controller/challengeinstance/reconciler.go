@@ -9,6 +9,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+var (
+	ChallengeInstanceFinalizerName = "ctf.backbone81/challenge-instance"
+)
+
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances/finalizers,verbs=update
@@ -81,7 +85,13 @@ type ReconcilerOption func(reconciler *Reconciler)
 // WithDefaultReconcilers returns a reconciler option which enables the default sub-reconcilers.
 func WithDefaultReconcilers() ReconcilerOption {
 	return func(reconciler *Reconciler) {
+		WithAddFinalizerReconciler()(reconciler)
 		WithStatusReconciler()(reconciler)
+		WithNamespaceReconciler()(reconciler)
+		WithRemoveFinalizerReconciler()(reconciler)
+
+		// The delete reconciler must be last, because the other reconcilers behave differently when the resource is
+		// deleted.
 		WithDeleteReconciler()(reconciler)
 	}
 }
@@ -95,5 +105,23 @@ func WithStatusReconciler() ReconcilerOption {
 func WithDeleteReconciler() ReconcilerOption {
 	return func(reconciler *Reconciler) {
 		reconciler.subReconcilers = append(reconciler.subReconcilers, NewDeleteReconciler(reconciler.client))
+	}
+}
+
+func WithNamespaceReconciler() ReconcilerOption {
+	return func(reconciler *Reconciler) {
+		reconciler.subReconcilers = append(reconciler.subReconcilers, NewNamespaceReconciler(reconciler.client))
+	}
+}
+
+func WithAddFinalizerReconciler() ReconcilerOption {
+	return func(reconciler *Reconciler) {
+		reconciler.subReconcilers = append(reconciler.subReconcilers, NewAddFinalizerReconciler(reconciler.client))
+	}
+}
+
+func WithRemoveFinalizerReconciler() ReconcilerOption {
+	return func(reconciler *Reconciler) {
+		reconciler.subReconcilers = append(reconciler.subReconcilers, NewRemoveFinalizerReconciler(reconciler.client))
 	}
 }
