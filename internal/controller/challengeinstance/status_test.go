@@ -91,9 +91,7 @@ var _ = Describe("StatusReconciler", func() {
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
 
-		// Kubernetes does not store milliseconds, so we need to cut off milliseconds if we want to compare against it
-		// later again.
-		customExpirationTimestamp := metav1.NewTime(time.Now().Add(3 * time.Minute)).Rfc3339Copy()
+		customExpirationTimestamp := metav1.NewTime(time.Now().Add(3 * time.Minute))
 		instance.Status.ExpirationTimestamp = customExpirationTimestamp
 		Expect(k8sClient.Status().Update(ctx, &instance)).To(Succeed())
 		Expect(instance.Status.ExpirationTimestamp).ToNot(BeZero())
@@ -105,7 +103,11 @@ var _ = Describe("StatusReconciler", func() {
 
 		By("verify all postconditions")
 		Expect(k8sClient.Get(ctx, client.ObjectKeyFromObject(&instance), &instance)).To(Succeed())
-		Expect(instance.Status.ExpirationTimestamp).To(Equal(customExpirationTimestamp))
+		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
+			"~",
+			customExpirationTimestamp.Time,
+			time.Second,
+		))
 	})
 
 	It("should not set the expiration time when already deleted", func() {
