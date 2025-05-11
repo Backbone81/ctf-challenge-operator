@@ -17,19 +17,16 @@ type NamespaceReconciler struct {
 	client client.Client
 }
 
-// NewNamespaceReconciler creates a new sub-reconciler instance. The reconciler is initialized with the given client.
 func NewNamespaceReconciler(client client.Client) *NamespaceReconciler {
 	return &NamespaceReconciler{
 		client: client,
 	}
 }
 
-// SetupWithManager registers the sub-reconciler with the manager.
 func (r *NamespaceReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *builder.Builder {
 	return ctrlBuilder
 }
 
-// Reconcile is the main reconciler function.
 func (r *NamespaceReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
 	namespace, err := r.getNamespace(ctx, challengeInstance)
 	if err != nil {
@@ -48,7 +45,6 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, challengeInstance *
 }
 
 func (r *NamespaceReconciler) reconcileOnCreate(ctx context.Context, desiredSpec *corev1.Namespace) (ctrl.Result, error) {
-
 	if err := r.client.Create(ctx, desiredSpec); err != nil {
 		return ctrl.Result{}, err
 	}

@@ -17,13 +17,12 @@ import (
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 )
 
-// ManifestsReconciler is responsible for creating the namespace for the challenge instance.
+// ManifestsReconciler is responsible for creating the manifests for the challenge instance.
 type ManifestsReconciler struct {
 	client   client.Client
 	recorder record.EventRecorder
 }
 
-// NewManifestsReconciler creates a new sub-reconciler instance. The reconciler is initialized with the given client.
 func NewManifestsReconciler(client client.Client, recorder record.EventRecorder) *ManifestsReconciler {
 	return &ManifestsReconciler{
 		client:   client,
@@ -31,12 +30,10 @@ func NewManifestsReconciler(client client.Client, recorder record.EventRecorder)
 	}
 }
 
-// SetupWithManager registers the sub-reconciler with the manager.
 func (r *ManifestsReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *builder.Builder {
 	return ctrlBuilder
 }
 
-// Reconcile is the main reconciler function.
 func (r *ManifestsReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
 	if !challengeInstance.DeletionTimestamp.IsZero() {
 		// We do not create manifests when the resource is already being deleted.

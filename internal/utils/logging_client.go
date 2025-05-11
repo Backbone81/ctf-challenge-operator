@@ -64,7 +64,7 @@ func (l *LoggingClient) logAction(action string, obj client.Object) {
 	l.logger.Info(fmt.Sprintf(
 		"%s %s",
 		action,
-		obj.GetObjectKind().GroupVersionKind().Kind,
+		getKind(l.client.Scheme(), obj),
 	),
 		"name", obj.GetName(),
 		"namespace", obj.GetNamespace(),
@@ -74,6 +74,7 @@ func (l *LoggingClient) logAction(action string, obj client.Object) {
 func (l *LoggingClient) Status() client.SubResourceWriter {
 	return &LoggingSubResourceWriter{
 		client:      l.client.Status(),
+		scheme:      l.client.Scheme(),
 		logger:      l.logger,
 		subresource: "status",
 	}
@@ -84,6 +85,7 @@ func (l *LoggingClient) SubResource(subResource string) client.SubResourceClient
 	return &LoggingSubResourceClient{
 		LoggingSubResourceWriter: LoggingSubResourceWriter{
 			client:      subResourceClient,
+			scheme:      l.client.Scheme(),
 			logger:      l.logger,
 			subresource: subResource,
 		},
@@ -109,6 +111,7 @@ func (l *LoggingClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 
 type LoggingSubResourceWriter struct {
 	client      client.SubResourceWriter
+	scheme      *runtime.Scheme
 	logger      logr.Logger
 	subresource string
 }
@@ -136,7 +139,7 @@ func (l *LoggingSubResourceWriter) logAction(action string, obj client.Object) {
 		"%s %s of %s",
 		action,
 		l.subresource,
-		obj.GetObjectKind().GroupVersionKind().Kind,
+		getKind(l.scheme, obj),
 	),
 		"name", obj.GetName(),
 		"namespace", obj.GetNamespace(),
@@ -153,4 +156,15 @@ var _ client.SubResourceClient = (*LoggingSubResourceClient)(nil)
 
 func (l *LoggingSubResourceClient) Get(ctx context.Context, obj client.Object, subResource client.Object, opts ...client.SubResourceGetOption) error {
 	return l.client.Get(ctx, obj, subResource, opts...)
+}
+
+func getKind(scheme *runtime.Scheme, obj client.Object) string {
+	if obj.GetObjectKind().GroupVersionKind().Kind != "" {
+		return obj.GetObjectKind().GroupVersionKind().Kind
+	}
+	gvks, _, err := scheme.ObjectKinds(obj)
+	if err != nil || len(gvks) < 1 {
+		return fmt.Sprintf("%T", obj)
+	}
+	return gvks[0].Kind
 }

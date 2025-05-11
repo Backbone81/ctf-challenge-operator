@@ -16,19 +16,16 @@ type DeleteReconciler struct {
 	client client.Client
 }
 
-// NewDeleteReconciler creates a new sub-reconciler instance. The reconciler is initialized with the given client.
 func NewDeleteReconciler(client client.Client) *DeleteReconciler {
 	return &DeleteReconciler{
 		client: client,
 	}
 }
 
-// SetupWithManager registers the sub-reconciler with the manager.
 func (r *DeleteReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *builder.Builder {
 	return ctrlBuilder
 }
 
-// Reconcile is the main reconciler function.
 func (r *DeleteReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
 	if !challengeInstance.DeletionTimestamp.IsZero() {
 		// We do not delete the resource when the resource is already being deleted.

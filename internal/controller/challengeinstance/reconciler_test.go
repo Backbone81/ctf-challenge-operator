@@ -3,20 +3,21 @@ package challengeinstance_test
 import (
 	"time"
 
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
-var _ = Describe("ChallengeInstance Reconciler", func() {
+var _ = Describe("Reconciler", func() {
 	var reconciler *challengeinstance.Reconciler
 
 	BeforeEach(func() {
@@ -24,67 +25,68 @@ var _ = Describe("ChallengeInstance Reconciler", func() {
 	})
 
 	AfterEach(func() {
-		var challengeInstanceList v1alpha1.ChallengeInstanceList
-		Expect(k8sClient.List(ctx, &challengeInstanceList)).To(Succeed())
-
-		for _, challengeInstance := range challengeInstanceList.Items {
-			Expect(k8sClient.Delete(ctx, &challengeInstance)).To(Succeed())
-		}
+		DeleteAllInstances()
 	})
 
 	It("should successfully reconcile the resource", func() {
-		challengeInstance := v1alpha1.ChallengeInstance{
+		By("prepare test with all preconditions")
+		configMapName := GenerateName("test-")
+		configMap := corev1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
-				GenerateName: "test",
-				Namespace:    "default",
+				Name: configMapName,
 			},
-			Spec: v1alpha1.ChallengeInstanceSpec{},
 		}
-		Expect(k8sClient.Create(ctx, &challengeInstance)).To(Succeed())
-
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&challengeInstance))
+		configMapRaw, err := ToRaw(&configMap)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(result).ToNot(BeZero())
-	})
 
-	It("should set an expiration", func() {
-		challengeInstance := v1alpha1.ChallengeInstance{
+		description := v1alpha1.ChallengeDescription{
 			ObjectMeta: metav1.ObjectMeta{
-				GenerateName: "test",
-				Namespace:    "default",
+				GenerateName: "test-",
+				Namespace:    corev1.NamespaceDefault,
 			},
-			Spec: v1alpha1.ChallengeInstanceSpec{},
+			Spec: v1alpha1.ChallengeDescriptionSpec{
+				Title: "test",
+				Text:  "test",
+				Manifests: []runtime.RawExtension{
+					{
+						Raw: configMapRaw,
+					},
+				},
+			},
 		}
-		Expect(k8sClient.Create(ctx, &challengeInstance)).To(Succeed())
+		Expect(k8sClient.Create(ctx, &description)).To(Succeed())
 
-		Expect(challengeInstance.Status.ExpirationTimestamp).To(BeZero())
-
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&challengeInstance))
-		Expect(err).ToNot(HaveOccurred())
-		Expect(result).ToNot(BeZero())
-
-		Expect(k8sClient.Get(ctx, client.ObjectKeyFromObject(&challengeInstance), &challengeInstance)).To(Succeed())
-
-		Expect(challengeInstance.Status.ExpirationTimestamp).ToNot(BeZero())
-	})
-
-	It("should delete an expired challenge instance", func() {
-		challengeInstance := v1alpha1.ChallengeInstance{
+		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
-				GenerateName: "test",
-				Namespace:    "default",
+				GenerateName: "test-",
+				Namespace:    corev1.NamespaceDefault,
 			},
-			Spec: v1alpha1.ChallengeInstanceSpec{},
+			Spec: v1alpha1.ChallengeInstanceSpec{
+				ChallengeDescription: corev1.LocalObjectReference{
+					Name: description.Name,
+				},
+			},
 		}
-		Expect(k8sClient.Create(ctx, &challengeInstance)).To(Succeed())
+		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
+		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
 
-		challengeInstance.Status.ExpirationTimestamp = metav1.NewTime(time.Now().Add(-1 * time.Second))
-		Expect(k8sClient.Status().Update(ctx, &challengeInstance)).To(Succeed())
-
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&challengeInstance))
+		By("run the reconciler")
+		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
-		Expect(result).To(BeZero())
+		Expect(result.RequeueAfter).To(BeNumerically(
+			"~",
+			time.Duration(challengeinstance.DefaultExpirationSeconds)*time.Second,
+			time.Second,
+		))
 
-		Expect(k8sClient.Get(ctx, client.ObjectKeyFromObject(&challengeInstance), &challengeInstance)).To(MatchError(ContainSubstring("not found")))
+		By("verify all postconditions")
+		var namespace corev1.Namespace
+		Expect(k8sClient.Get(ctx, client.ObjectKey{
+			Name: instance.Name,
+		}, &namespace)).To(Succeed())
+		Expect(k8sClient.Get(ctx, client.ObjectKey{
+			Name:      configMap.Name,
+			Namespace: instance.Name,
+		}, &configMap)).To(Succeed())
 	})
 })

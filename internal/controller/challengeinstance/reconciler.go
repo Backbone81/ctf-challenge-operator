@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	ChallengeInstanceFinalizerName = "ctf.backbone81/challenge-instance"
+	FinalizerName = "ctf.backbone81/challenge-instance"
 )
 
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances,verbs=get;list;watch;create;update;patch;delete
@@ -48,7 +48,6 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrlBuilder.Complete(r)
 }
 
-// Reconcile is the main reconciler function.
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	challengeInstance, err := r.getChallengeInstance(ctx, req)
 	if err != nil {

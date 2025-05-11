@@ -16,26 +16,23 @@ type AddFinalizerReconciler struct {
 	client client.Client
 }
 
-// NewAddFinalizerReconciler creates a new sub-reconciler instance. The reconciler is initialized with the given client.
 func NewAddFinalizerReconciler(client client.Client) *AddFinalizerReconciler {
 	return &AddFinalizerReconciler{
 		client: client,
 	}
 }
 
-// SetupWithManager registers the sub-reconciler with the manager.
 func (r *AddFinalizerReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *builder.Builder {
 	return ctrlBuilder
 }
 
-// Reconcile is the main reconciler function.
 func (r *AddFinalizerReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
 	if !challengeInstance.DeletionTimestamp.IsZero() {
 		// We do not add the finalizer when the resource is already being deleted.
 		return ctrl.Result{}, nil
 	}
 
-	if !controllerutil.AddFinalizer(challengeInstance, ChallengeInstanceFinalizerName) {
+	if !controllerutil.AddFinalizer(challengeInstance, FinalizerName) {
 		// The finalizer is already on the resource, nothing to do.
 		return ctrl.Result{}, nil
 	}
