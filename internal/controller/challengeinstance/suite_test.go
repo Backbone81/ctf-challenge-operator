@@ -26,8 +26,6 @@ import (
 )
 
 var (
-	ctx       context.Context
-	cancel    context.CancelFunc
 	testEnv   *envtest.Environment
 	k8sClient client.Client
 )
@@ -40,7 +38,6 @@ func TestReconciler(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	Expect(utils.MoveToProjectRoot()).To(Succeed())
-	ctx, cancel = context.WithCancel(context.TODO()) //nolint:fatcontext // This does not lead to fat contexts.
 
 	logger := zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true))
 	ctrllog.SetLogger(logger)
@@ -60,18 +57,10 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	cancel()
 	Expect(testEnv.Stop()).To(Succeed())
 })
 
-var (
-	// DoNotDeleteFinalizerName provides a name for a finalizer which is not used by the reconcilers themselves. This finalizer
-	// is used to prevent a resource from being deleted immediately when you want to test situations where you need to
-	// inspect the behavior for deletion.
-	DoNotDeleteFinalizerName = "ctf.backbone81/do-not-delete"
-)
-
-func DeleteAllInstances() {
+func DeleteAllInstances(ctx context.Context) {
 	var challengeInstanceList v1alpha1.ChallengeInstanceList
 	Expect(k8sClient.List(ctx, &challengeInstanceList)).To(Succeed())
 

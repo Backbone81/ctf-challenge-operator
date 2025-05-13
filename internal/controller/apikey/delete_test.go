@@ -1,9 +1,10 @@
-package challengeinstance_test
+package apikey_test
 
 import (
 	"time"
 
-	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
+	"github.com/backbone81/ctf-challenge-operator/internal/controller/apikey"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
@@ -15,10 +16,10 @@ import (
 )
 
 var _ = Describe("DeleteReconciler", func() {
-	var reconciler *challengeinstance.Reconciler
+	var reconciler *apikey.Reconciler
 
 	BeforeEach(func() {
-		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithDeleteReconciler())
+		reconciler = apikey.NewReconciler(k8sClient, apikey.WithDeleteReconciler())
 	})
 
 	AfterEach(func(ctx SpecContext) {
@@ -27,7 +28,7 @@ var _ = Describe("DeleteReconciler", func() {
 
 	It("should delete the instance when expiration is reached", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		instance := v1alpha1.ChallengeInstance{
+		instance := v1alpha1.APIKey{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
@@ -51,7 +52,7 @@ var _ = Describe("DeleteReconciler", func() {
 
 	It("should not delete the instance when expiration is not reached", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		instance := v1alpha1.ChallengeInstance{
+		instance := v1alpha1.APIKey{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
@@ -76,7 +77,7 @@ var _ = Describe("DeleteReconciler", func() {
 
 	It("should not delete the instance when expiration is reached and instance is already deleted", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		instance := v1alpha1.ChallengeInstance{
+		instance := v1alpha1.APIKey{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,

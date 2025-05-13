@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
+
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
@@ -18,8 +20,6 @@ import (
 )
 
 var (
-	ctx       context.Context
-	cancel    context.CancelFunc
 	testEnv   *envtest.Environment
 	k8sClient client.Client
 )
@@ -32,7 +32,6 @@ func TestReconciler(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	Expect(utils.MoveToProjectRoot()).To(Succeed())
-	ctx, cancel = context.WithCancel(context.TODO()) //nolint:fatcontext // This does not lead to fat contexts.
 
 	logger := zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true))
 	ctrllog.SetLogger(logger)
@@ -52,6 +51,14 @@ var _ = BeforeSuite(func() {
 })
 
 var _ = AfterSuite(func() {
-	cancel()
 	Expect(testEnv.Stop()).To(Succeed())
 })
+
+func DeleteAllInstances(ctx context.Context) {
+	var apiKeyList v1alpha1.APIKeyList
+	Expect(k8sClient.List(ctx, &apiKeyList)).To(Succeed())
+
+	for _, apiKey := range apiKeyList.Items {
+		Expect(k8sClient.Delete(ctx, &apiKey)).To(Succeed())
+	}
+}

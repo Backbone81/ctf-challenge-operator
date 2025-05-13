@@ -78,8 +78,6 @@ spec:
                   challenge instance.
                 format: date-time
                 type: string
-            required:
-            - expirationTimestamp
             type: object
         type: object
     served: true

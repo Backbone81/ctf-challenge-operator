@@ -23,11 +23,11 @@ var _ = Describe("StatusReconciler", func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithStatusReconciler())
 	})
 
-	AfterEach(func() {
-		DeleteAllInstances()
+	AfterEach(func(ctx SpecContext) {
+		DeleteAllInstances(ctx)
 	})
 
-	It("should set the default expiration time when not set", func() {
+	It("should set the default expiration time when not set", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
@@ -52,7 +52,7 @@ var _ = Describe("StatusReconciler", func() {
 		))
 	})
 
-	It("should set the custom expiration time when not set", func() {
+	It("should set the custom expiration time when set", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		customExpirationSeconds := int64(120)
 		instance := v1alpha1.ChallengeInstance{
@@ -81,7 +81,7 @@ var _ = Describe("StatusReconciler", func() {
 		))
 	})
 
-	It("should not overwrite the expiration time when already set", func() {
+	It("should not overwrite the expiration time when already set", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
@@ -110,14 +110,14 @@ var _ = Describe("StatusReconciler", func() {
 		))
 	})
 
-	It("should not set the expiration time when already deleted", func() {
+	It("should not set the expiration time when already deleted", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
-					DoNotDeleteFinalizerName,
+					utils.DoNotDeleteFinalizerName,
 				},
 			},
 		}

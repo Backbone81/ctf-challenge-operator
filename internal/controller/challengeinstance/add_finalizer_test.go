@@ -20,11 +20,11 @@ var _ = Describe("AddFinalizerReconciler", func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithAddFinalizerReconciler())
 	})
 
-	AfterEach(func() {
-		DeleteAllInstances()
+	AfterEach(func(ctx SpecContext) {
+		DeleteAllInstances(ctx)
 	})
 
-	It("should successfully add the finalizer", func() {
+	It("should successfully add the finalizer", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
@@ -46,7 +46,7 @@ var _ = Describe("AddFinalizerReconciler", func() {
 		Expect(controllerutil.ContainsFinalizer(&instance, challengeinstance.FinalizerName)).To(BeTrue())
 	})
 
-	It("should succeed if the finalizer already exists", func() {
+	It("should succeed if the finalizer already exists", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
@@ -71,14 +71,14 @@ var _ = Describe("AddFinalizerReconciler", func() {
 		Expect(controllerutil.ContainsFinalizer(&instance, challengeinstance.FinalizerName)).To(BeTrue())
 	})
 
-	It("should not add the finalizer when being deleted", func() {
+	It("should not add the finalizer when being deleted", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
-					DoNotDeleteFinalizerName,
+					utils.DoNotDeleteFinalizerName,
 				},
 			},
 		}

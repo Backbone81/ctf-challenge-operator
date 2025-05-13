@@ -18,11 +18,11 @@ var _ = Describe("NamespaceReconciler", func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithNamespaceReconciler())
 	})
 
-	AfterEach(func() {
-		DeleteAllInstances()
+	AfterEach(func(ctx SpecContext) {
+		DeleteAllInstances(ctx)
 	})
 
-	It("should successfully create the namespace", func() {
+	It("should successfully create the namespace", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
@@ -47,7 +47,7 @@ var _ = Describe("NamespaceReconciler", func() {
 		}, &namespace)).To(Succeed())
 	})
 
-	It("should succeed if the namespace already exists", func() {
+	It("should succeed if the namespace already exists", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
@@ -74,14 +74,14 @@ var _ = Describe("NamespaceReconciler", func() {
 		}, &namespace)).To(Succeed())
 	})
 
-	It("should delete the namespace on deletion", func() {
+	It("should delete the namespace on deletion", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
-					DoNotDeleteFinalizerName,
+					utils.DoNotDeleteFinalizerName,
 				},
 			},
 		}

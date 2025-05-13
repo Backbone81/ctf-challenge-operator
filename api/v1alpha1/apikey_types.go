@@ -14,9 +14,11 @@ type APIKeySpec struct {
 // APIKeyStatus defines the observed state of APIKey.
 type APIKeyStatus struct {
 	// Key is the opaque API key.
+	// +optional
 	Key string `json:"token"`
 
 	// ExpirationTimestamp is the time of expiration of the returned API key.
+	// +optional
 	ExpirationTimestamp metav1.Time `json:"expirationTimestamp"`
 }
 

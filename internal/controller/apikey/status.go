@@ -17,6 +17,10 @@ import (
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 )
 
+const (
+	DefaultExpirationSeconds = int64(12 * 60 * 60) // default is 12 hours
+)
+
 // StatusReconciler is responsible for reconciling the status of the APIKey resource.
 type StatusReconciler struct {
 	client client.Client
@@ -36,6 +40,11 @@ func (r *StatusReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *build
 
 // Reconcile is the main reconciler function.
 func (r *StatusReconciler) Reconcile(ctx context.Context, apiKey *v1alpha1.APIKey) (ctrl.Result, error) {
+	if !apiKey.DeletionTimestamp.IsZero() {
+		// We do not update the status when the resource is already being deleted.
+		return ctrl.Result{}, nil
+	}
+
 	updateStatus := false
 
 	// generate a key if needed
@@ -50,7 +59,7 @@ func (r *StatusReconciler) Reconcile(ctx context.Context, apiKey *v1alpha1.APIKe
 
 	// calculate expiration timestamp
 	if apiKey.Status.ExpirationTimestamp.IsZero() {
-		expirationSeconds := int64(12 * 60 * 60) // default is 12 hours
+		expirationSeconds := DefaultExpirationSeconds
 		if apiKey.Spec.ExpirationSeconds != nil {
 			expirationSeconds = *apiKey.Spec.ExpirationSeconds
 		}

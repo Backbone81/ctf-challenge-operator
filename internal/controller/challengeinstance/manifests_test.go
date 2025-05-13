@@ -20,11 +20,11 @@ var _ = Describe("ManifestsReconciler", func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithManifestsReconciler(record.NewFakeRecorder(5)))
 	})
 
-	AfterEach(func() {
-		DeleteAllInstances()
+	AfterEach(func(ctx SpecContext) {
+		DeleteAllInstances(ctx)
 	})
 
-	It("should successfully create the manifests", func() {
+	It("should successfully create the manifests", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		configMapName := GenerateName("test-")
 		configMap := corev1.ConfigMap{
@@ -85,7 +85,7 @@ var _ = Describe("ManifestsReconciler", func() {
 		}, &configMap)).To(Succeed())
 	})
 
-	It("should succeed if the manifests are already there", func() {
+	It("should succeed if the manifests are already there", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		configMapName := GenerateName("test-")
 		configMap := corev1.ConfigMap{
@@ -148,7 +148,7 @@ var _ = Describe("ManifestsReconciler", func() {
 		}, &configMap)).To(Succeed())
 	})
 
-	It("should not create the manifests when the instance is deleted", func() {
+	It("should not create the manifests when the instance is deleted", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		configMapName := GenerateName("test-")
 		configMap := corev1.ConfigMap{

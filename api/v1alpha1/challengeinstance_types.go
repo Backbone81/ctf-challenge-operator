@@ -19,6 +19,7 @@ type ChallengeInstanceSpec struct {
 // ChallengeInstanceStatus defines the observed state of ChallengeInstance.
 type ChallengeInstanceStatus struct {
 	// ExpirationTimestamp is the time of expiration of the challenge instance.
+	// +optional
 	ExpirationTimestamp metav1.Time `json:"expirationTimestamp"`
 }
 

@@ -20,11 +20,11 @@ var _ = Describe("RemoveFinalizerReconciler", func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithRemoveFinalizerReconciler())
 	})
 
-	AfterEach(func() {
-		DeleteAllInstances()
+	AfterEach(func(ctx SpecContext) {
+		DeleteAllInstances(ctx)
 	})
 
-	It("should successfully remove the finalizer", func() {
+	It("should successfully remove the finalizer", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
@@ -32,7 +32,7 @@ var _ = Describe("RemoveFinalizerReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
 					challengeinstance.FinalizerName,
-					DoNotDeleteFinalizerName,
+					utils.DoNotDeleteFinalizerName,
 				},
 			},
 		}
@@ -52,14 +52,14 @@ var _ = Describe("RemoveFinalizerReconciler", func() {
 		Expect(controllerutil.ContainsFinalizer(&instance, challengeinstance.FinalizerName)).To(BeFalse())
 	})
 
-	It("should succeed if the finalizer does not exist", func() {
+	It("should succeed if the finalizer does not exist", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
-					DoNotDeleteFinalizerName,
+					utils.DoNotDeleteFinalizerName,
 				},
 			},
 		}
@@ -79,7 +79,7 @@ var _ = Describe("RemoveFinalizerReconciler", func() {
 		Expect(controllerutil.ContainsFinalizer(&instance, challengeinstance.FinalizerName)).To(BeFalse())
 	})
 
-	It("should not remove the finalizer when not being deleted", func() {
+	It("should not remove the finalizer when not being deleted", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		instance := v1alpha1.ChallengeInstance{
 			ObjectMeta: metav1.ObjectMeta{

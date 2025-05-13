@@ -24,11 +24,11 @@ var _ = Describe("Reconciler", func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithDefaultReconcilers(record.NewFakeRecorder(5)))
 	})
 
-	AfterEach(func() {
-		DeleteAllInstances()
+	AfterEach(func(ctx SpecContext) {
+		DeleteAllInstances(ctx)
 	})
 
-	It("should successfully reconcile the resource", func() {
+	It("should successfully reconcile the resource", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		configMapName := GenerateName("test-")
 		configMap := corev1.ConfigMap{

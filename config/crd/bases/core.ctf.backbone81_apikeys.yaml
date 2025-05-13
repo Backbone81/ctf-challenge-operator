@@ -64,9 +64,6 @@ spec:
               token:
                 description: Key is the opaque API key.
                 type: string
-            required:
-            - expirationTimestamp
-            - token
             type: object
         type: object
     served: true
