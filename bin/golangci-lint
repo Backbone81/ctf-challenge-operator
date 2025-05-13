@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+GOLANGCI_LINT_VERSION=v1.63.4
+
+BIN_DIR="${PWD}/tmp"
+BIN_NAME=golangci-lint
+BIN_PATH="${BIN_DIR}/${BIN_NAME}"
+
+if [ ! -f "${BIN_PATH}" ]
+then
+  echo "Installing ${BIN_PATH}"
+  mkdir -p "${BIN_DIR}"
+  GOBIN="${BIN_DIR}" go install github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}
+fi
+
+exec "${BIN_PATH}" "$@"

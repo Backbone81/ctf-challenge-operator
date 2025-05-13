@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+KUSTOMIZE_VERSION=v5.6.0
+
+BIN_DIR="${PWD}/tmp"
+BIN_NAME=kustomize
+BIN_PATH="${BIN_DIR}/${BIN_NAME}"
+
+if [ ! -f "${BIN_PATH}" ]
+then
+  echo "Installing ${BIN_PATH}"
+  mkdir -p "${BIN_DIR}"
+  GOBIN="${BIN_DIR}" go install sigs.k8s.io/kustomize/kustomize/v5@${KUSTOMIZE_VERSION}
+fi
+
+exec "${BIN_PATH}" "$@"

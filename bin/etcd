@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+KUBERNETES_VERSION=$(go list -m -f "{{ .Version }}" k8s.io/api | awk -F'[v.]' '{printf "1.%d", $3}')
+
+BIN_DIR="${PWD}/tmp"
+KUBEBUILDER_ASSETS=$(setup-envtest use "${KUBERNETES_VERSION}" --bin-dir "${BIN_DIR}" -p path)
+
+BIN_NAME=etcd
+BIN_PATH="${KUBEBUILDER_ASSETS}/${BIN_NAME}"
+
+exec "${BIN_PATH}" "$@"

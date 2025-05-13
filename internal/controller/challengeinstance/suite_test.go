@@ -45,6 +45,7 @@ var _ = BeforeSuite(func() {
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths:     []string{filepath.Join("config", "crd", "bases")},
 		ErrorIfCRDPathMissing: true,
+		BinaryAssetsDirectory: "bin",
 	}
 	cfg, err := testEnv.Start()
 	Expect(err).NotTo(HaveOccurred())
