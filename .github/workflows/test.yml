@@ -6,10 +6,10 @@ on:
 
 jobs:
   test:
-    name: Run on Ubuntu
-    runs-on: ubuntu-latest
+    name: Run Tests
+    runs-on: ubuntu-24.04
     steps:
-      - name: Clone the code
+      - name: Clone Code
         uses: actions/checkout@v4
 
       - name: Setup Go
@@ -17,7 +17,12 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Running Tests
+      - name: Run Tests
         run: |
-          go mod tidy
+          set -ex
           make test
+
+      - name: Check Generated Files
+        run: |
+          set -ex
+          git diff
