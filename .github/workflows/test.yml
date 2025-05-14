@@ -20,6 +20,9 @@ jobs:
       - name: Run Tests
         run: |
           set -ex
+          etcd --version
+          kube-apiserver --version
+          kubectl --version
           make test
 
       - name: Check Generated Files
