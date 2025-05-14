@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 SETUP_ENVTEST_VERSION=$(go list -m -f "{{ .Version }}" sigs.k8s.io/controller-runtime | awk -F'[v.]' '{printf "release-%d.%d", $2, $3}')
 
