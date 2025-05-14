@@ -22,7 +22,7 @@ jobs:
           set -ex
           make test
 
-      - name: Check Generated Files
+      - name: Check for Modified Files
         run: |
           set -ex
           git diff

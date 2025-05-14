@@ -50,6 +50,7 @@ docker-push: ## Push the operator docker image.
 
 .PHONY: clean
 clean: ## Remove temporary files.
+	chmod -R ug+w tmp
 	rm -rf tmp
 	rm -f ctf-challenge-operator
 
