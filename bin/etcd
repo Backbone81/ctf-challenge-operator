@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 KUBERNETES_VERSION=$(go list -m -f "{{ .Version }}" k8s.io/api | awk -F'[v.]' '{printf "1.%d", $3}')
 

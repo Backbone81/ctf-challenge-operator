@@ -20,10 +20,6 @@ jobs:
       - name: Run Tests
         run: |
           set -ex
-          export PATH=${PWD}/bin:${PATH}
-          etcd --version
-          kube-apiserver --version
-          kubectl --version
           make test
 
       - name: Check Generated Files

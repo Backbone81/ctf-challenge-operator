@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 SETUP_ENVTEST_VERSION=$(go list -m -f "{{ .Version }}" sigs.k8s.io/controller-runtime | awk -F'[v.]' '{printf "release-%d.%d", $2, $3}')
 
@@ -11,7 +11,6 @@ if [ ! -f "${BIN_PATH}" ]
 then
   # We cannot echo any message here, because that would break the expected output of setup-envtest which should be
   # the path where the assets were installed.
-  # echo "Installing ${BIN_PATH}"
   mkdir -p "${BIN_DIR}"
   GOBIN="${BIN_DIR}" go install sigs.k8s.io/controller-runtime/tools/setup-envtest@${SETUP_ENVTEST_VERSION}
 fi
