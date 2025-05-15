@@ -14,62 +14,60 @@ spec:
     singular: apikey
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - format: date-time
-      jsonPath: .status.expirationTimestamp
-      name: Expiration
-      type: string
-    - jsonPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-    name: v1alpha1
-    schema:
-      openAPIV3Schema:
-        description: APIKey is the Schema for the apikeys API.
-        properties:
-          apiVersion:
-            description: |-
-              APIVersion defines the versioned schema of this representation of an object.
-              Servers should convert recognized schemas to the latest internal value, and
-              may reject unrecognized values.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-            type: string
-          kind:
-            description: |-
-              Kind is a string value representing the REST resource this object represents.
-              Servers may infer this from the endpoint the client submits requests to.
-              Cannot be updated.
-              In CamelCase.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-            type: string
-          metadata:
-            type: object
-          spec:
-            description: APIKeySpec defines the desired state of APIKey.
-            properties:
-              expirationSeconds:
-                description: ExpirationSeconds is the requested duration of validity
-                  of the API key.
-                format: int64
-                type: integer
-            type: object
-          status:
-            description: APIKeyStatus defines the observed state of APIKey.
-            properties:
-              expirationTimestamp:
-                description: ExpirationTimestamp is the time of expiration of the
-                  returned API key.
-                format: date-time
-                type: string
-              token:
-                description: Key is the opaque API key.
-                type: string
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
+    - additionalPrinterColumns:
+        - format: date-time
+          jsonPath: .status.expirationTimestamp
+          name: Expiration
+          type: string
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: APIKey is the Schema for the apikeys API.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: APIKeySpec defines the desired state of APIKey.
+              properties:
+                expirationSeconds:
+                  description: ExpirationSeconds is the requested duration of validity of the API key.
+                  format: int64
+                  type: integer
+              type: object
+            status:
+              description: APIKeyStatus defines the observed state of APIKey.
+              properties:
+                expirationTimestamp:
+                  description: ExpirationTimestamp is the time of expiration of the returned API key.
+                  format: date-time
+                  type: string
+                token:
+                  description: Key is the opaque API key.
+                  type: string
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -86,104 +84,100 @@ spec:
     singular: challengedescription
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - jsonPath: .spec.title
-      name: Title
-      type: string
-    - jsonPath: .spec.category
-      name: Category
-      type: string
-    - jsonPath: .spec.value
-      name: Value
-      type: integer
-    - jsonPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-    name: v1alpha1
-    schema:
-      openAPIV3Schema:
-        description: ChallengeDescription is the Schema for the challengedescriptions
-          API.
-        properties:
-          apiVersion:
-            description: |-
-              APIVersion defines the versioned schema of this representation of an object.
-              Servers should convert recognized schemas to the latest internal value, and
-              may reject unrecognized values.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-            type: string
-          kind:
-            description: |-
-              Kind is a string value representing the REST resource this object represents.
-              Servers may infer this from the endpoint the client submits requests to.
-              Cannot be updated.
-              In CamelCase.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-            type: string
-          metadata:
-            type: object
-          spec:
-            description: ChallengeDescriptionSpec defines the desired state of ChallengeDescription.
-            properties:
-              category:
-                description: Category is the category this challenge belongs to.
-                type: string
-              hints:
-                description: Hints provides a list of hints to help solve the challenge.
-                items:
-                  properties:
-                    cost:
-                      default: 0
-                      description: Cost is the number of points which are to be deducted
-                        from the overall score if this hint is being used.
-                      minimum: 0
-                      type: integer
-                    text:
-                      description: Text is the content of the hint.
-                      minLength: 1
-                      type: string
-                  required:
-                  - text
-                  type: object
-                type: array
-              manifests:
-                description: |-
-                  Manifests provide the Kubernetes manifests which should be created when a new instance of the challenge is
-                  requested. The manifests are placed in a dedicated namespace. The namespace provided in those manifests is
-                  overwritten.
-                items:
-                  type: object
-                  x-kubernetes-preserve-unknown-fields: true
-                minItems: 1
-                type: array
-              text:
-                description: Text is the content of the challenge
-                minLength: 1
-                type: string
-              title:
-                description: Title is the name of the challenge
-                minLength: 1
-                type: string
-              value:
-                default: 0
-                description: Value is the number of points which are added upon solving
-                  the challenge.
-                minimum: 0
-                type: integer
-            required:
-            - manifests
-            - text
-            - title
-            type: object
-          status:
-            description: ChallengeDescriptionStatus defines the observed state of
-              ChallengeDescription.
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
+    - additionalPrinterColumns:
+        - jsonPath: .spec.title
+          name: Title
+          type: string
+        - jsonPath: .spec.category
+          name: Category
+          type: string
+        - jsonPath: .spec.value
+          name: Value
+          type: integer
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: ChallengeDescription is the Schema for the challengedescriptions API.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: ChallengeDescriptionSpec defines the desired state of ChallengeDescription.
+              properties:
+                category:
+                  description: Category is the category this challenge belongs to.
+                  type: string
+                hints:
+                  description: Hints provides a list of hints to help solve the challenge.
+                  items:
+                    properties:
+                      cost:
+                        default: 0
+                        description: Cost is the number of points which are to be deducted from the overall score if this hint is being used.
+                        minimum: 0
+                        type: integer
+                      text:
+                        description: Text is the content of the hint.
+                        minLength: 1
+                        type: string
+                    required:
+                      - text
+                    type: object
+                  type: array
+                manifests:
+                  description: |-
+                    Manifests provide the Kubernetes manifests which should be created when a new instance of the challenge is
+                    requested. The manifests are placed in a dedicated namespace. The namespace provided in those manifests is
+                    overwritten.
+                  items:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  minItems: 1
+                  type: array
+                text:
+                  description: Text is the content of the challenge
+                  minLength: 1
+                  type: string
+                title:
+                  description: Title is the name of the challenge
+                  minLength: 1
+                  type: string
+                value:
+                  default: 0
+                  description: Value is the number of points which are added upon solving the challenge.
+                  minimum: 0
+                  type: integer
+              required:
+                - manifests
+                - text
+                - title
+              type: object
+            status:
+              description: ChallengeDescriptionStatus defines the observed state of ChallengeDescription.
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -200,73 +194,70 @@ spec:
     singular: challengeinstance
   scope: Namespaced
   versions:
-  - additionalPrinterColumns:
-    - format: date-time
-      jsonPath: .status.expirationTimestamp
-      name: Expiration
-      type: string
-    - jsonPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-    name: v1alpha1
-    schema:
-      openAPIV3Schema:
-        description: ChallengeInstance is the Schema for the challengeinstances API.
-        properties:
-          apiVersion:
-            description: |-
-              APIVersion defines the versioned schema of this representation of an object.
-              Servers should convert recognized schemas to the latest internal value, and
-              may reject unrecognized values.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-            type: string
-          kind:
-            description: |-
-              Kind is a string value representing the REST resource this object represents.
-              Servers may infer this from the endpoint the client submits requests to.
-              Cannot be updated.
-              In CamelCase.
-              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-            type: string
-          metadata:
-            type: object
-          spec:
-            description: ChallengeInstanceSpec defines the desired state of ChallengeInstance.
-            properties:
-              challengeDescription:
-                description: ChallengeDescription is the name of the ChallengeDescription
-                  this challenge instance is related to.
-                properties:
-                  name:
-                    default: ""
-                    description: |-
-                      Name of the referent.
-                      This field is effectively required, but due to backwards compatibility is
-                      allowed to be empty. Instances of this type with an empty value here are
-                      almost certainly wrong.
-                      More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                    type: string
-                type: object
-                x-kubernetes-map-type: atomic
-              expirationSeconds:
-                description: ExpirationSeconds is the requested duration of validity
-                  of the Challenge instance.
-                format: int64
-                type: integer
-            required:
-            - challengeDescription
-            type: object
-          status:
-            description: ChallengeInstanceStatus defines the observed state of ChallengeInstance.
-            properties:
-              expirationTimestamp:
-                description: ExpirationTimestamp is the time of expiration of the
-                  challenge instance.
-                format: date-time
-                type: string
-            type: object
-        type: object
-    served: true
-    storage: true
-    subresources:
-      status: {}
+    - additionalPrinterColumns:
+        - format: date-time
+          jsonPath: .status.expirationTimestamp
+          name: Expiration
+          type: string
+        - jsonPath: .metadata.creationTimestamp
+          name: Age
+          type: date
+      name: v1alpha1
+      schema:
+        openAPIV3Schema:
+          description: ChallengeInstance is the Schema for the challengeinstances API.
+          properties:
+            apiVersion:
+              description: |-
+                APIVersion defines the versioned schema of this representation of an object.
+                Servers should convert recognized schemas to the latest internal value, and
+                may reject unrecognized values.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+              type: string
+            kind:
+              description: |-
+                Kind is a string value representing the REST resource this object represents.
+                Servers may infer this from the endpoint the client submits requests to.
+                Cannot be updated.
+                In CamelCase.
+                More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+              type: string
+            metadata:
+              type: object
+            spec:
+              description: ChallengeInstanceSpec defines the desired state of ChallengeInstance.
+              properties:
+                challengeDescription:
+                  description: ChallengeDescription is the name of the ChallengeDescription this challenge instance is related to.
+                  properties:
+                    name:
+                      default: ""
+                      description: |-
+                        Name of the referent.
+                        This field is effectively required, but due to backwards compatibility is
+                        allowed to be empty. Instances of this type with an empty value here are
+                        almost certainly wrong.
+                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                      type: string
+                  type: object
+                  x-kubernetes-map-type: atomic
+                expirationSeconds:
+                  description: ExpirationSeconds is the requested duration of validity of the Challenge instance.
+                  format: int64
+                  type: integer
+              required:
+                - challengeDescription
+              type: object
+            status:
+              description: ChallengeInstanceStatus defines the observed state of ChallengeInstance.
+              properties:
+                expirationTimestamp:
+                  description: ExpirationTimestamp is the time of expiration of the challenge instance.
+                  format: date-time
+                  type: string
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

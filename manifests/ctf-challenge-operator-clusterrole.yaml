@@ -4,39 +4,39 @@ kind: ClusterRole
 metadata:
   name: ctf-challenge-operator
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - core.ctf.backbone81
-  resources:
-  - apikeys
-  - challengeinstances
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - core.ctf.backbone81
-  resources:
-  - apikeys/finalizers
-  - challengeinstances/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - core.ctf.backbone81
-  resources:
-  - apikeys/status
-  - challengeinstances/status
-  verbs:
-  - get
-  - patch
-  - update
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+  - apiGroups:
+      - core.ctf.backbone81
+    resources:
+      - apikeys
+      - challengeinstances
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - core.ctf.backbone81
+    resources:
+      - apikeys/finalizers
+      - challengeinstances/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - core.ctf.backbone81
+    resources:
+      - apikeys/status
+      - challengeinstances/status
+    verbs:
+      - get
+      - patch
+      - update

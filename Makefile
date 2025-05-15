@@ -71,9 +71,10 @@ $(V1ALPHA1_CLUSTERROLE_FILE): $(V1ALPHA1_CONTROLLER_FILES)
 	controller-gen rbac:roleName=ctf-challenge-operator paths=./internal/controller/... output:rbac:artifacts:config=tmp
 	mv tmp/role.yaml manifests/ctf-challenge-operator-clusterrole.yaml
 
-manifests/kustomization.yaml: $(V1ALPHA1_CLUSTERROLE_FILE) $(V1ALPHA1_CRD_FILE)
+manifests/kustomization.yaml: $(V1ALPHA1_CRD_FILE) $(V1ALPHA1_CLUSTERROLE_FILE) $(filter-out manifests/kustomization.yaml, $(wildcard manifests/*.yaml))
 	rm -f $@
 	cd manifests && kustomize create --autodetect
+	for f in manifests/*.yaml; do yq --prettyPrint --inplace "$$f"; done
 
 .PHONY: generate
 generate: $(V1ALPHA1_DEEPCOPY_FILE) $(V1ALPHA1_CRD_FILE) $(V1ALPHA1_CLUSTERROLE_FILE) manifests/kustomization.yaml
