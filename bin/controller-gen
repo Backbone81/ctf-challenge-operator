@@ -3,8 +3,11 @@ set -e
 
 CONTROLLER_GEN_VERSION=v0.16.5
 
-BIN_DIR="${PWD}/tmp"
-BIN_NAME=controller-gen
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+
+BIN_DIR="${SCRIPT_DIR}/../tmp"
+BIN_NAME="${SCRIPT_NAME}"
 BIN_PATH="${BIN_DIR}/${BIN_NAME}"
 
 mkdir -p "${BIN_DIR}"

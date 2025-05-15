@@ -72,10 +72,10 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("setting up reconciler with manager: %w", err)
 		}
 
-		if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
+		if err := mgr.AddHealthzCheck("health", healthz.Ping); err != nil {
 			return fmt.Errorf("setting up health check: %w", err)
 		}
-		if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
+		if err := mgr.AddReadyzCheck("ready", healthz.Ping); err != nil {
 			return fmt.Errorf("setting up ready check: %w", err)
 		}
 		return mgr.Start(ctrl.SetupSignalHandler())
@@ -121,7 +121,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(
 		&healthProbeBindAddress,
 		"health-probe-bind-address",
-		":8081",
+		"0",
 		"The address the probe endpoint binds to.",
 	)
 	rootCmd.PersistentFlags().BoolVar(

@@ -1,7 +1,3 @@
-# We want to have our binaries in the bin subdirectory available. In addition we want them to have priority over
-# binaries somewhere else on the system.
-export PATH := $(CURDIR)/bin:$(PATH)
-
 # This is the Go package to run a target against. Useful for running tests of one package, for example.
 PACKAGE ?= ./...
 
@@ -13,6 +9,10 @@ DOCKER_IMAGE_REPOSITORY ?= backbone81/ctf-challenge-operator
 
 # The docker image containing repository and tag.
 DOCKER_IMAGE ?= $(DOCKER_IMAGE_REPOSITORY):$(DOCKER_IMAGE_TAG)
+
+# We want to have our binaries in the bin subdirectory available. In addition we want them to have priority over
+# binaries somewhere else on the system.
+export PATH := $(CURDIR)/bin:$(PATH)
 
 .PHONY: all
 all: build
@@ -59,23 +59,24 @@ V1ALPHA1_TYPE_FILES := $(filter-out $(V1ALPHA1_DEEPCOPY_FILE), $(wildcard api/v1
 $(V1ALPHA1_DEEPCOPY_FILE): $(V1ALPHA1_TYPE_FILES)
 	controller-gen object paths=./api/v1alpha1/...
 
-V1ALPHA1_CRD_FILES := \
-	core.ctf.backbone81_apikeys.yaml \
-	core.ctf.backbone81_challengedescriptions.yaml \
-	core.ctf.backbone81_challengeinstances.yaml
-V1ALPHA1_CRD_FILES := $(addprefix config/crd/bases/,$(V1ALPHA1_CRD_FILES))
-$(V1ALPHA1_CRD_FILES): $(V1ALPHA1_TYPE_FILES)
-	controller-gen crd paths=./api/v1alpha1/... output:crd:artifacts:config=config/crd/bases
+V1ALPHA1_CRD_FILE := manifests/ctf-challenge-operator-crd.yaml
+$(V1ALPHA1_CRD_FILE): $(V1ALPHA1_TYPE_FILES)
+	rm -f tmp/core.ctf.backbone81_*.yaml 
+	controller-gen crd paths=./api/v1alpha1/... output:crd:artifacts:config=tmp
+	cat tmp/core.ctf.backbone81_*.yaml > manifests/ctf-challenge-operator-crd.yaml
 
-V1ALPHA1_ROLE_FILES := \
-	role.yaml
-V1ALPHA1_ROLE_FILES := $(addprefix config/rbac/,$(V1ALPHA1_ROLE_FILES))
+V1ALPHA1_CLUSTERROLE_FILE := manifests/ctf-challenge-operator-clusterrole.yaml
 V1ALPHA1_CONTROLLER_FILES := $(shell go list -f '{{range .GoFiles}}{{$$.Dir}}/{{.}}{{"\n"}}{{end}}' ./internal/controller/...)
-$(V1ALPHA1_ROLE_FILES): $(V1ALPHA1_CONTROLLER_FILES)
-	controller-gen rbac:roleName=ctf-challenge-operator paths=./internal/controller/...
+$(V1ALPHA1_CLUSTERROLE_FILE): $(V1ALPHA1_CONTROLLER_FILES)
+	controller-gen rbac:roleName=ctf-challenge-operator paths=./internal/controller/... output:rbac:artifacts:config=tmp
+	mv tmp/role.yaml manifests/ctf-challenge-operator-clusterrole.yaml
+
+manifests/kustomization.yaml: $(V1ALPHA1_CLUSTERROLE_FILE) $(V1ALPHA1_CRD_FILE)
+	rm -f $@
+	cd manifests && kustomize create --autodetect
 
 .PHONY: generate
-generate: $(V1ALPHA1_DEEPCOPY_FILE) $(V1ALPHA1_CRD_FILES) $(V1ALPHA1_ROLE_FILES)
+generate: $(V1ALPHA1_DEEPCOPY_FILE) $(V1ALPHA1_CRD_FILE) $(V1ALPHA1_CLUSTERROLE_FILE) manifests/kustomization.yaml
 
 .PHONY: prepare
 prepare: generate

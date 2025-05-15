@@ -1,10 +1,13 @@
 #!/bin/bash
 set -e
 
-SETUP_ENVTEST_VERSION=$(go list -m -f "{{ .Version }}" sigs.k8s.io/controller-runtime | awk -F'[v.]' '{printf "release-%d.%d", $2, $3}')
+VERSION=$(go list -m -f "{{ .Version }}" sigs.k8s.io/controller-runtime | awk -F'[v.]' '{printf "release-%d.%d", $2, $3}')
 
-BIN_DIR="${PWD}/tmp"
-BIN_NAME=setup-envtest
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
+
+BIN_DIR="${SCRIPT_DIR}/../tmp"
+BIN_NAME="${SCRIPT_NAME}"
 BIN_PATH="${BIN_DIR}/${BIN_NAME}"
 
 mkdir -p "${BIN_DIR}"
@@ -17,7 +20,7 @@ flock -x 200
 if [ ! -f "${BIN_PATH}" ]
 then
   echo "Installing ${BIN_PATH}"
-  GOBIN="${BIN_DIR}" go install sigs.k8s.io/controller-runtime/tools/setup-envtest@${SETUP_ENVTEST_VERSION}
+  GOBIN="${BIN_DIR}" go install sigs.k8s.io/controller-runtime/tools/setup-envtest@${VERSION}
 fi
 
 exec "${BIN_PATH}" "$@"
