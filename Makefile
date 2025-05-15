@@ -99,23 +99,18 @@ build-installer: generate ## Generate a consolidated YAML with CRDs and deployme
 
 ##@ Deployment
 
-ifndef ignore-not-found
-  ignore-not-found = false
-endif
-
 .PHONY: install
-install: generate ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	kustomize build config/crd | kubectl apply -f -
+install: lint ## Install CRDs into the K8s cluster specified in ~/.kube/config.
+	kubectl apply -f manifests/ctf-challenge-operator-crd.yaml
 
 .PHONY: uninstall
-uninstall: generate ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	kustomize build config/crd | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
+uninstall: ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
+	kubectl delete -f manifests/ctf-challenge-operator-crd.yaml
 
 .PHONY: deploy
-deploy: generate ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd config/manager && kustomize edit set image controller=$(DOCKER_IMAGE)
-	kustomize build config/default | kubectl apply -f -
+deploy: lint ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+	kubectl apply -k manifests
 
 .PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	kustomize build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
+undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
+	kubectl delete -k manifests
