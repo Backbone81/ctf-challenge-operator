@@ -16,7 +16,7 @@ import (
 )
 
 var _ = Describe("DeleteReconciler", func() {
-	var reconciler *apikey.Reconciler
+	var reconciler *utils.Reconciler[*v1alpha1.APIKey]
 
 	BeforeEach(func() {
 		reconciler = apikey.NewReconciler(k8sClient, apikey.WithDeleteReconciler())
@@ -69,7 +69,7 @@ var _ = Describe("DeleteReconciler", func() {
 		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).ToNot(BeZero())
-		Expect(result.RequeueAfter).To(BeNumerically("~", time.Minute, time.Second))
+		Expect(result.RequeueAfter).To(BeNumerically("~", time.Minute, utils.DurationEpsilon))
 
 		By("verify all postconditions")
 		Expect(k8sClient.Get(ctx, client.ObjectKeyFromObject(&instance), &instance)).To(Succeed())

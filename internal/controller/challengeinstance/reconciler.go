@@ -1,14 +1,11 @@
 package challengeinstance
 
 import (
-	"context"
-
 	"k8s.io/client-go/tools/record"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
+	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
 var FinalizerName = "ctf.backbone81/challenge-instance"
@@ -23,73 +20,19 @@ var FinalizerName = "ctf.backbone81/challenge-instance"
 // +kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 
-// Reconciler provides functionality for provisioning challenge instances.
-type Reconciler struct {
-	client         client.Client
-	subReconcilers []SubReconciler
+func NewReconciler(client client.Client, options ...utils.ReconcilerOption[*v1alpha1.ChallengeInstance]) *utils.Reconciler[*v1alpha1.ChallengeInstance] {
+	return utils.NewReconciler[*v1alpha1.ChallengeInstance](
+		client,
+		func() *v1alpha1.ChallengeInstance {
+			return &v1alpha1.ChallengeInstance{}
+		},
+		options...,
+	)
 }
-
-// NewReconciler creates a new reconciler instance. The reconciler is initialized with the given client and applies
-// the provided options to the reconciler.
-func NewReconciler(client client.Client, options ...ReconcilerOption) *Reconciler {
-	result := &Reconciler{
-		client: client,
-	}
-	for _, option := range options {
-		option(result)
-	}
-	return result
-}
-
-// SetupWithManager registers all enabled sub-reconcilers with the given manager.
-func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
-	ctrlBuilder := ctrl.NewControllerManagedBy(mgr).
-		For(&v1alpha1.ChallengeInstance{})
-	for _, subReconciler := range r.subReconcilers {
-		ctrlBuilder = subReconciler.SetupWithManager(ctrlBuilder)
-	}
-	return ctrlBuilder.Complete(r)
-}
-
-func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	challengeInstance, err := r.getChallengeInstance(ctx, req)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-	if challengeInstance == nil {
-		// The resource was deleted.
-		return ctrl.Result{}, nil
-	}
-
-	for _, subReconciler := range r.subReconcilers {
-		result, err := subReconciler.Reconcile(ctx, challengeInstance)
-		if err != nil || !result.IsZero() {
-			return result, err
-		}
-	}
-	return ctrl.Result{}, nil
-}
-
-func (r *Reconciler) getChallengeInstance(ctx context.Context, req ctrl.Request) (*v1alpha1.ChallengeInstance, error) {
-	var result v1alpha1.ChallengeInstance
-	if err := r.client.Get(ctx, req.NamespacedName, &result); err != nil {
-		return nil, client.IgnoreNotFound(err)
-	}
-	return &result, nil
-}
-
-// SubReconciler is the interface all sub-reconcilers need to implement.
-type SubReconciler interface {
-	Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error)
-	SetupWithManager(builder *builder.Builder) *builder.Builder
-}
-
-// ReconcilerOption is an option which can be applied to the reconciler.
-type ReconcilerOption func(reconciler *Reconciler)
 
 // WithDefaultReconcilers returns a reconciler option which enables the default sub-reconcilers.
-func WithDefaultReconcilers(recorder record.EventRecorder) ReconcilerOption {
-	return func(reconciler *Reconciler) {
+func WithDefaultReconcilers(recorder record.EventRecorder) utils.ReconcilerOption[*v1alpha1.ChallengeInstance] {
+	return func(reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]) {
 		WithAddFinalizerReconciler()(reconciler)
 		WithStatusReconciler()(reconciler)
 		WithNamespaceReconciler()(reconciler)
@@ -102,38 +45,38 @@ func WithDefaultReconcilers(recorder record.EventRecorder) ReconcilerOption {
 	}
 }
 
-func WithStatusReconciler() ReconcilerOption {
-	return func(reconciler *Reconciler) {
-		reconciler.subReconcilers = append(reconciler.subReconcilers, NewStatusReconciler(reconciler.client))
+func WithStatusReconciler() utils.ReconcilerOption[*v1alpha1.ChallengeInstance] {
+	return func(reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]) {
+		reconciler.AppendSubReconciler(NewStatusReconciler(reconciler.GetClient()))
 	}
 }
 
-func WithDeleteReconciler() ReconcilerOption {
-	return func(reconciler *Reconciler) {
-		reconciler.subReconcilers = append(reconciler.subReconcilers, NewDeleteReconciler(reconciler.client))
+func WithDeleteReconciler() utils.ReconcilerOption[*v1alpha1.ChallengeInstance] {
+	return func(reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]) {
+		reconciler.AppendSubReconciler(NewDeleteReconciler(reconciler.GetClient()))
 	}
 }
 
-func WithNamespaceReconciler() ReconcilerOption {
-	return func(reconciler *Reconciler) {
-		reconciler.subReconcilers = append(reconciler.subReconcilers, NewNamespaceReconciler(reconciler.client))
+func WithNamespaceReconciler() utils.ReconcilerOption[*v1alpha1.ChallengeInstance] {
+	return func(reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]) {
+		reconciler.AppendSubReconciler(NewNamespaceReconciler(reconciler.GetClient()))
 	}
 }
 
-func WithAddFinalizerReconciler() ReconcilerOption {
-	return func(reconciler *Reconciler) {
-		reconciler.subReconcilers = append(reconciler.subReconcilers, NewAddFinalizerReconciler(reconciler.client))
+func WithAddFinalizerReconciler() utils.ReconcilerOption[*v1alpha1.ChallengeInstance] {
+	return func(reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]) {
+		reconciler.AppendSubReconciler(NewAddFinalizerReconciler(reconciler.GetClient()))
 	}
 }
 
-func WithRemoveFinalizerReconciler() ReconcilerOption {
-	return func(reconciler *Reconciler) {
-		reconciler.subReconcilers = append(reconciler.subReconcilers, NewRemoveFinalizerReconciler(reconciler.client))
+func WithRemoveFinalizerReconciler() utils.ReconcilerOption[*v1alpha1.ChallengeInstance] {
+	return func(reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]) {
+		reconciler.AppendSubReconciler(NewRemoveFinalizerReconciler(reconciler.GetClient()))
 	}
 }
 
-func WithManifestsReconciler(recorder record.EventRecorder) ReconcilerOption {
-	return func(reconciler *Reconciler) {
-		reconciler.subReconcilers = append(reconciler.subReconcilers, NewManifestsReconciler(reconciler.client, recorder))
+func WithManifestsReconciler(recorder record.EventRecorder) utils.ReconcilerOption[*v1alpha1.ChallengeInstance] {
+	return func(reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]) {
+		reconciler.AppendSubReconciler(NewManifestsReconciler(reconciler.GetClient(), recorder))
 	}
 }

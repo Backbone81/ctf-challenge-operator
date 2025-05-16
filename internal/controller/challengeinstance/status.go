@@ -6,10 +6,10 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
+	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
 const (
@@ -18,17 +18,13 @@ const (
 
 // StatusReconciler is responsible for reconciling the status of the challenge instance.
 type StatusReconciler struct {
-	client client.Client
+	utils.DefaultSubReconciler
 }
 
 func NewStatusReconciler(client client.Client) *StatusReconciler {
 	return &StatusReconciler{
-		client: client,
+		DefaultSubReconciler: utils.NewDefaultSubReconciler(client),
 	}
-}
-
-func (r *StatusReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *builder.Builder {
-	return ctrlBuilder
 }
 
 func (r *StatusReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
@@ -50,7 +46,7 @@ func (r *StatusReconciler) Reconcile(ctx context.Context, challengeInstance *v1a
 	}
 
 	if updateStatus {
-		if err := r.client.Status().Update(ctx, challengeInstance); err != nil {
+		if err := r.GetClient().Status().Update(ctx, challengeInstance); err != nil {
 			return ctrl.Result{}, err
 		}
 	}

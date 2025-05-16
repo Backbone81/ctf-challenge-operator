@@ -17,7 +17,7 @@ import (
 )
 
 var _ = Describe("StatusReconciler", func() {
-	var reconciler *apikey.Reconciler
+	var reconciler *utils.Reconciler[*v1alpha1.APIKey]
 
 	BeforeEach(func() {
 		reconciler = apikey.NewReconciler(k8sClient, apikey.WithStatusReconciler())
@@ -49,7 +49,7 @@ var _ = Describe("StatusReconciler", func() {
 			Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 				"~",
 				time.Now().Add(time.Duration(apikey.DefaultExpirationSeconds)*time.Second),
-				time.Second,
+				utils.DurationEpsilon,
 			))
 		})
 
@@ -78,7 +78,7 @@ var _ = Describe("StatusReconciler", func() {
 			Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 				"~",
 				time.Now().Add(time.Duration(customExpirationSeconds)*time.Second),
-				time.Second,
+				utils.DurationEpsilon,
 			))
 		})
 
@@ -107,7 +107,7 @@ var _ = Describe("StatusReconciler", func() {
 			Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 				"~",
 				customExpirationTimestamp.Time,
-				time.Second,
+				utils.DurationEpsilon,
 			))
 		})
 

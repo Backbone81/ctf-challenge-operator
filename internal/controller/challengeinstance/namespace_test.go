@@ -14,7 +14,7 @@ import (
 )
 
 var _ = Describe("NamespaceReconciler", func() {
-	var reconciler *challengeinstance.Reconciler
+	var reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]
 
 	BeforeEach(func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithNamespaceReconciler())

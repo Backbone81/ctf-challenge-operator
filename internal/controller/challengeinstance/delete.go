@@ -5,25 +5,21 @@ import (
 	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
+	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
 // DeleteReconciler is responsible for deleting the challenge instance when it is expired.
 type DeleteReconciler struct {
-	client client.Client
+	utils.DefaultSubReconciler
 }
 
 func NewDeleteReconciler(client client.Client) *DeleteReconciler {
 	return &DeleteReconciler{
-		client: client,
+		DefaultSubReconciler: utils.NewDefaultSubReconciler(client),
 	}
-}
-
-func (r *DeleteReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *builder.Builder {
-	return ctrlBuilder
 }
 
 func (r *DeleteReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
@@ -33,7 +29,7 @@ func (r *DeleteReconciler) Reconcile(ctx context.Context, challengeInstance *v1a
 	}
 
 	if challengeInstance.Status.ExpirationTimestamp.Time.Before(time.Now()) {
-		if err := r.client.Delete(ctx, challengeInstance); err != nil {
+		if err := r.GetClient().Delete(ctx, challengeInstance); err != nil {
 			return ctrl.Result{}, err
 		}
 		return ctrl.Result{}, nil

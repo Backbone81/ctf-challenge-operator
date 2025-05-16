@@ -10,27 +10,23 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
+	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
 // ManifestsReconciler is responsible for creating the manifests for the challenge instance.
 type ManifestsReconciler struct {
-	client   client.Client
+	utils.DefaultSubReconciler
 	recorder record.EventRecorder
 }
 
 func NewManifestsReconciler(client client.Client, recorder record.EventRecorder) *ManifestsReconciler {
 	return &ManifestsReconciler{
-		client:   client,
-		recorder: recorder,
+		DefaultSubReconciler: utils.NewDefaultSubReconciler(client),
+		recorder:             recorder,
 	}
-}
-
-func (r *ManifestsReconciler) SetupWithManager(ctrlBuilder *builder.Builder) *builder.Builder {
-	return ctrlBuilder
 }
 
 func (r *ManifestsReconciler) Reconcile(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance) (ctrl.Result, error) {
@@ -40,7 +36,7 @@ func (r *ManifestsReconciler) Reconcile(ctx context.Context, challengeInstance *
 	}
 
 	var challengeDescription v1alpha1.ChallengeDescription
-	if err := r.client.Get(ctx, client.ObjectKey{
+	if err := r.GetClient().Get(ctx, client.ObjectKey{
 		Namespace: challengeInstance.Namespace,
 		Name:      challengeInstance.Spec.ChallengeDescriptionName,
 	}, &challengeDescription); err != nil {
@@ -89,7 +85,7 @@ func (r *ManifestsReconciler) reconcileManifest(ctx context.Context, challengeIn
 }
 
 func (r *ManifestsReconciler) reconcileManifestOnCreate(ctx context.Context, challengeInstance *v1alpha1.ChallengeInstance, desiredSpec *unstructured.Unstructured) (ctrl.Result, error) {
-	if err := r.client.Create(ctx, desiredSpec); err != nil {
+	if err := r.GetClient().Create(ctx, desiredSpec); err != nil {
 		r.recorder.Eventf(
 			challengeInstance,
 			corev1.EventTypeWarning,
@@ -121,7 +117,7 @@ func (r *ManifestsReconciler) reconcileManifestOnUpdate(ctx context.Context, cha
 	}
 
 	currentSpec.Object["spec"] = desiredSpec.Object["spec"]
-	if err := r.client.Update(ctx, currentSpec); err != nil {
+	if err := r.GetClient().Update(ctx, currentSpec); err != nil {
 		r.recorder.Eventf(
 			challengeInstance,
 			corev1.EventTypeWarning,
@@ -149,7 +145,7 @@ func (r *ManifestsReconciler) reconcileManifestOnUpdate(ctx context.Context, cha
 func (r *ManifestsReconciler) getCurrentSpec(ctx context.Context, desiredSpec client.Object) (*unstructured.Unstructured, error) {
 	var currentSpec unstructured.Unstructured
 	currentSpec.SetGroupVersionKind(desiredSpec.GetObjectKind().GroupVersionKind())
-	if err := r.client.Get(ctx, client.ObjectKey{
+	if err := r.GetClient().Get(ctx, client.ObjectKey{
 		Namespace: desiredSpec.GetNamespace(),
 		Name:      desiredSpec.GetName(),
 	}, &currentSpec); err != nil {

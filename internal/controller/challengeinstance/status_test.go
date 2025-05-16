@@ -17,7 +17,7 @@ import (
 )
 
 var _ = Describe("StatusReconciler", func() {
-	var reconciler *challengeinstance.Reconciler
+	var reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]
 
 	BeforeEach(func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithStatusReconciler())
@@ -48,7 +48,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			time.Now().Add(time.Duration(challengeinstance.DefaultExpirationSeconds)*time.Second),
-			3*time.Second,
+			utils.DurationEpsilon,
 		))
 	})
 
@@ -77,7 +77,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			time.Now().Add(time.Duration(customExpirationSeconds)*time.Second),
-			3*time.Second,
+			utils.DurationEpsilon,
 		))
 	})
 
@@ -106,7 +106,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			customExpirationTimestamp.Time,
-			3*time.Second,
+			utils.DurationEpsilon,
 		))
 	})
 

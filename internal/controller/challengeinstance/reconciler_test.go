@@ -18,7 +18,7 @@ import (
 )
 
 var _ = Describe("Reconciler", func() {
-	var reconciler *challengeinstance.Reconciler
+	var reconciler *utils.Reconciler[*v1alpha1.ChallengeInstance]
 
 	BeforeEach(func() {
 		reconciler = challengeinstance.NewReconciler(k8sClient, challengeinstance.WithDefaultReconcilers(record.NewFakeRecorder(5)))
@@ -74,7 +74,7 @@ var _ = Describe("Reconciler", func() {
 		Expect(result.RequeueAfter).To(BeNumerically(
 			"~",
 			time.Duration(challengeinstance.DefaultExpirationSeconds)*time.Second,
-			time.Second,
+			utils.DurationEpsilon,
 		))
 
 		By("verify all postconditions")

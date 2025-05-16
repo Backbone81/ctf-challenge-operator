@@ -12,7 +12,7 @@ import (
 )
 
 var _ = Describe("APIKey Reconciler", func() {
-	var reconciler *apikey.Reconciler
+	var reconciler *utils.Reconciler[*v1alpha1.APIKey]
 
 	BeforeEach(func() {
 		reconciler = apikey.NewReconciler(k8sClient, apikey.WithDefaultReconcilers())
