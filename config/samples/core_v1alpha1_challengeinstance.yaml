@@ -1,7 +1,0 @@
-apiVersion: core.ctf.backbone81/v1alpha1
-kind: ChallengeInstance
-metadata:
-  name: challengeinstance-sample
-spec:
-  challengeDescription:
-    name: challengedescription-sample
