@@ -2,14 +2,14 @@
 apiVersion: core.ctf.backbone81/v1alpha1
 kind: ChallengeDescription
 metadata:
-  name: sample-challengedescription
+  name: challenge-description-sample
 spec:
   title: Demo Challenge
-  text: This is a demo challenge.
+  description: This is a demo challenge.
   category: Web exploitation
   value: 100
   hints:
-    - text: This is some hint.
+    - description: This is some hint.
       cost: 10
   manifests:
     - apiVersion: apps/v1

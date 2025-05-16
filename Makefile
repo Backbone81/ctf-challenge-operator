@@ -44,16 +44,12 @@ build: lint ## Build the operator binary.
 docker-build: ## Build the operator docker image.
 	docker build -t $(DOCKER_IMAGE) .
 
-.PHONY: docker-push
-docker-push: ## Push the operator docker image.
-	docker push $(DOCKER_IMAGE)
-
 .PHONY: clean
 clean: ## Remove temporary files.
+	kind delete cluster
 	chmod -R ug+w tmp
 	rm -rf tmp
 	rm -f ctf-challenge-operator
-	kind delete cluster
 
 ##@ Deployment
 

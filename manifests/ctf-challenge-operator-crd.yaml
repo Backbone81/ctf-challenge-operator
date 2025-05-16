@@ -125,6 +125,10 @@ spec:
                 category:
                   description: Category is the category this challenge belongs to.
                   type: string
+                description:
+                  description: Description is the content of the challenge
+                  minLength: 1
+                  type: string
                 hints:
                   description: Hints provides a list of hints to help solve the challenge.
                   items:
@@ -134,12 +138,12 @@ spec:
                         description: Cost is the number of points which are to be deducted from the overall score if this hint is being used.
                         minimum: 0
                         type: integer
-                      text:
-                        description: Text is the content of the hint.
+                      description:
+                        description: Description is the content of the hint.
                         minLength: 1
                         type: string
                     required:
-                      - text
+                      - description
                     type: object
                   type: array
                 manifests:
@@ -152,10 +156,6 @@ spec:
                     x-kubernetes-preserve-unknown-fields: true
                   minItems: 1
                   type: array
-                text:
-                  description: Text is the content of the challenge
-                  minLength: 1
-                  type: string
                 title:
                   description: Title is the name of the challenge
                   minLength: 1
@@ -166,8 +166,8 @@ spec:
                   minimum: 0
                   type: integer
               required:
+                - description
                 - manifests
-                - text
                 - title
               type: object
             status:
@@ -227,26 +227,15 @@ spec:
             spec:
               description: ChallengeInstanceSpec defines the desired state of ChallengeInstance.
               properties:
-                challengeDescription:
-                  description: ChallengeDescription is the name of the ChallengeDescription this challenge instance is related to.
-                  properties:
-                    name:
-                      default: ""
-                      description: |-
-                        Name of the referent.
-                        This field is effectively required, but due to backwards compatibility is
-                        allowed to be empty. Instances of this type with an empty value here are
-                        almost certainly wrong.
-                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                      type: string
-                  type: object
-                  x-kubernetes-map-type: atomic
+                challengeDescriptionName:
+                  description: ChallengeDescriptionName is the name of the ChallengeDescription this challenge instance is related to.
+                  type: string
                 expirationSeconds:
                   description: ExpirationSeconds is the requested duration of validity of the Challenge instance.
                   format: int64
                   type: integer
               required:
-                - challengeDescription
+                - challengeDescriptionName
               type: object
             status:
               description: ChallengeInstanceStatus defines the observed state of ChallengeInstance.

@@ -12,10 +12,10 @@ type ChallengeDescriptionSpec struct {
 	// +kubebuilder:validation:MinLength=1
 	Title string `json:"title"`
 
-	// Text is the content of the challenge
+	// Description is the content of the challenge
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
-	Text string `json:"text"`
+	Description string `json:"description"`
 
 	// Category is the category this challenge belongs to.
 	// +kubebuilder:validation:Optional
@@ -40,10 +40,10 @@ type ChallengeDescriptionSpec struct {
 }
 
 type ChallengeHint struct {
-	// Text is the content of the hint.
+	// Description is the content of the hint.
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
-	Text string `json:"text"`
+	Description string `json:"description"`
 
 	// Cost is the number of points which are to be deducted from the overall score if this hint is being used.
 	// +kubebuilder:default=0

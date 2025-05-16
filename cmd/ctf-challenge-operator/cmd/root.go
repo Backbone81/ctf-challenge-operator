@@ -46,12 +46,14 @@ var rootCmd = &cobra.Command{
 		}
 
 		ctrl.SetLogger(logger)
+
 		restConfig, err := ctrl.GetConfig()
 		if err != nil {
 			return fmt.Errorf("setting up kubernetes config: %w", err)
 		}
 		restConfig.QPS = kubernetesClientQPS
 		restConfig.Burst = kubernetesClientBurst
+
 		mgr, err := ctrl.NewManager(
 			restConfig,
 			ctrl.Options{

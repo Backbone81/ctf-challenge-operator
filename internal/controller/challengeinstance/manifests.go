@@ -42,7 +42,7 @@ func (r *ManifestsReconciler) Reconcile(ctx context.Context, challengeInstance *
 	var challengeDescription v1alpha1.ChallengeDescription
 	if err := r.client.Get(ctx, client.ObjectKey{
 		Namespace: challengeInstance.Namespace,
-		Name:      challengeInstance.Spec.ChallengeDescription.Name,
+		Name:      challengeInstance.Spec.ChallengeDescriptionName,
 	}, &challengeDescription); err != nil {
 		r.recorder.Eventf(
 			challengeInstance,
@@ -50,7 +50,7 @@ func (r *ManifestsReconciler) Reconcile(ctx context.Context, challengeInstance *
 			"Creating",
 			"ChallengeDescription could not be found at %s/%s: %s",
 			challengeInstance.Namespace,
-			challengeInstance.Spec.ChallengeDescription.Name,
+			challengeInstance.Spec.ChallengeDescriptionName,
 			err,
 		)
 		return ctrl.Result{}, err

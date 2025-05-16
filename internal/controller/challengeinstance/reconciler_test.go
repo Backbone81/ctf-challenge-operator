@@ -45,8 +45,8 @@ var _ = Describe("Reconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeDescriptionSpec{
-				Title: "test",
-				Text:  "test",
+				Title:       "test",
+				Description: "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,
@@ -62,13 +62,11 @@ var _ = Describe("Reconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeInstanceSpec{
-				ChallengeDescription: corev1.LocalObjectReference{
-					Name: description.Name,
-				},
+				ChallengeDescriptionName: description.Name,
 			},
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
-		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+		Expect(instance.Spec.ChallengeDescriptionName).ToNot(BeZero())
 
 		By("run the reconciler")
 		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))

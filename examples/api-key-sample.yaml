@@ -2,6 +2,6 @@
 apiVersion: core.ctf.backbone81/v1alpha1
 kind: APIKey
 metadata:
-  name: sample-apikey
+  name: api-key-sample
 spec:
   expirationSeconds: 300

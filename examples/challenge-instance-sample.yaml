@@ -2,8 +2,7 @@
 apiVersion: core.ctf.backbone81/v1alpha1
 kind: ChallengeInstance
 metadata:
-  name: sample-challengeinstance
+  name: challenge-instance-sample
 spec:
   expirationSeconds: 300
-  challengeDescription:
-    name: sample-challengedescription
+  challengeDescriptionName: challenge-description-sample

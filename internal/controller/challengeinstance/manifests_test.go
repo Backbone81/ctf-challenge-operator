@@ -43,8 +43,8 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeDescriptionSpec{
-				Title: "test",
-				Text:  "test",
+				Title:       "test",
+				Description: "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,
@@ -60,13 +60,11 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeInstanceSpec{
-				ChallengeDescription: corev1.LocalObjectReference{
-					Name: description.Name,
-				},
+				ChallengeDescriptionName: description.Name,
 			},
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
-		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+		Expect(instance.Spec.ChallengeDescriptionName).ToNot(BeZero())
 
 		namespace := corev1.Namespace{
 			ObjectMeta: metav1.ObjectMeta{
@@ -104,8 +102,8 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeDescriptionSpec{
-				Title: "test",
-				Text:  "test",
+				Title:       "test",
+				Description: "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,
@@ -121,13 +119,11 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeInstanceSpec{
-				ChallengeDescription: corev1.LocalObjectReference{
-					Name: description.Name,
-				},
+				ChallengeDescriptionName: description.Name,
 			},
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
-		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+		Expect(instance.Spec.ChallengeDescriptionName).ToNot(BeZero())
 
 		namespace := corev1.Namespace{
 			ObjectMeta: metav1.ObjectMeta{
@@ -158,13 +154,11 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeInstanceSpec{
-				ChallengeDescription: corev1.LocalObjectReference{
-					Name: GenerateName("not-existing-"),
-				},
+				ChallengeDescriptionName: GenerateName("not-existing-"),
 			},
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
-		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+		Expect(instance.Spec.ChallengeDescriptionName).ToNot(BeZero())
 
 		namespace := corev1.Namespace{
 			ObjectMeta: metav1.ObjectMeta{
@@ -187,8 +181,8 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeDescriptionSpec{
-				Title: "test",
-				Text:  "test",
+				Title:       "test",
+				Description: "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: []byte(`{"kind":"NotExisting"}`),
@@ -204,13 +198,11 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeInstanceSpec{
-				ChallengeDescription: corev1.LocalObjectReference{
-					Name: description.Name,
-				},
+				ChallengeDescriptionName: description.Name,
 			},
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
-		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+		Expect(instance.Spec.ChallengeDescriptionName).ToNot(BeZero())
 
 		namespace := corev1.Namespace{
 			ObjectMeta: metav1.ObjectMeta{
@@ -242,8 +234,8 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeDescriptionSpec{
-				Title: "test",
-				Text:  "test",
+				Title:       "test",
+				Description: "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,
@@ -262,16 +254,14 @@ var _ = Describe("ManifestsReconciler", func() {
 				},
 			},
 			Spec: v1alpha1.ChallengeInstanceSpec{
-				ChallengeDescription: corev1.LocalObjectReference{
-					Name: description.Name,
-				},
+				ChallengeDescriptionName: description.Name,
 			},
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
 		Expect(k8sClient.Delete(ctx, &instance)).To(Succeed())
 		Expect(k8sClient.Get(ctx, client.ObjectKeyFromObject(&instance), &instance)).To(Succeed())
 		Expect(instance.DeletionTimestamp.IsZero()).To(BeFalse())
-		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+		Expect(instance.Spec.ChallengeDescriptionName).ToNot(BeZero())
 
 		namespace := corev1.Namespace{
 			ObjectMeta: metav1.ObjectMeta{

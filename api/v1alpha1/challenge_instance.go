@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -11,9 +10,9 @@ type ChallengeInstanceSpec struct {
 	// +optional
 	ExpirationSeconds *int64 `json:"expirationSeconds"`
 
-	// ChallengeDescription is the name of the ChallengeDescription this challenge instance is related to.
+	// ChallengeDescriptionName is the name of the ChallengeDescription this challenge instance is related to.
 	// +kubebuilder:validation:Required
-	ChallengeDescription corev1.LocalObjectReference `json:"challengeDescription"`
+	ChallengeDescriptionName string `json:"challengeDescriptionName"`
 }
 
 // ChallengeInstanceStatus defines the observed state of ChallengeInstance.
