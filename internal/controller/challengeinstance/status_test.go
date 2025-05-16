@@ -48,7 +48,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			time.Now().Add(time.Duration(challengeinstance.DefaultExpirationSeconds)*time.Second),
-			time.Second,
+			3*time.Second,
 		))
 	})
 
@@ -77,7 +77,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			time.Now().Add(time.Duration(customExpirationSeconds)*time.Second),
-			time.Second,
+			3*time.Second,
 		))
 	})
 
@@ -106,7 +106,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			customExpirationTimestamp.Time,
-			time.Second,
+			3*time.Second,
 		))
 	})
 

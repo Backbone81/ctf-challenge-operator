@@ -150,6 +150,81 @@ var _ = Describe("ManifestsReconciler", func() {
 		}, &configMap)).To(Succeed())
 	})
 
+	It("should fail if the referenced challenge description is missing", func(ctx SpecContext) {
+		By("prepare test with all preconditions")
+		instance := v1alpha1.ChallengeInstance{
+			ObjectMeta: metav1.ObjectMeta{
+				GenerateName: "test-",
+				Namespace:    corev1.NamespaceDefault,
+			},
+			Spec: v1alpha1.ChallengeInstanceSpec{
+				ChallengeDescription: corev1.LocalObjectReference{
+					Name: GenerateName("not-existing-"),
+				},
+			},
+		}
+		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
+		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+
+		namespace := corev1.Namespace{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: instance.Name,
+			},
+		}
+		Expect(k8sClient.Create(ctx, &namespace)).To(Succeed())
+
+		By("run the reconciler")
+		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		Expect(err).To(HaveOccurred())
+		Expect(result).To(BeZero())
+	})
+
+	It("should fail with a malformed manifests", func(ctx SpecContext) {
+		By("prepare test with all preconditions")
+		description := v1alpha1.ChallengeDescription{
+			ObjectMeta: metav1.ObjectMeta{
+				GenerateName: "test-",
+				Namespace:    corev1.NamespaceDefault,
+			},
+			Spec: v1alpha1.ChallengeDescriptionSpec{
+				Title: "test",
+				Text:  "test",
+				Manifests: []runtime.RawExtension{
+					{
+						Raw: []byte(`{"kind":"NotExisting"}`),
+					},
+				},
+			},
+		}
+		Expect(k8sClient.Create(ctx, &description)).To(Succeed())
+
+		instance := v1alpha1.ChallengeInstance{
+			ObjectMeta: metav1.ObjectMeta{
+				GenerateName: "test-",
+				Namespace:    corev1.NamespaceDefault,
+			},
+			Spec: v1alpha1.ChallengeInstanceSpec{
+				ChallengeDescription: corev1.LocalObjectReference{
+					Name: description.Name,
+				},
+			},
+		}
+		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
+		Expect(instance.Spec.ChallengeDescription).ToNot(BeZero())
+
+		namespace := corev1.Namespace{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: instance.Name,
+			},
+		}
+		Expect(k8sClient.Create(ctx, &namespace)).To(Succeed())
+
+		By("run the reconciler")
+		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		Expect(err).To(HaveOccurred())
+		Expect(result).To(BeZero())
+	})
+
 	It("should not create the manifests when the instance is deleted", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
 		configMapName := GenerateName("test-")

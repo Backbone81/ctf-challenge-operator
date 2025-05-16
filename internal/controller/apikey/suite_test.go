@@ -30,6 +30,7 @@ func TestReconciler(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	Expect(utils.MoveToProjectRoot()).To(Succeed())
+	Expect(utils.MakeBinDirAvailable()).To(Succeed())
 
 	logger := zap.New(zap.WriteTo(GinkgoWriter), zap.UseDevMode(true))
 	ctrllog.SetLogger(logger)
