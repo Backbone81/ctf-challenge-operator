@@ -1,16 +1,18 @@
 package challengeinstance_test
 
 import (
-	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
-	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
-	"github.com/backbone81/ctf-challenge-operator/internal/utils"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
+	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
+	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
+	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
 var _ = Describe("ManifestsReconciler", func() {

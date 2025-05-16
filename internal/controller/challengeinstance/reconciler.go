@@ -4,16 +4,14 @@ import (
 	"context"
 
 	"k8s.io/client-go/tools/record"
-
-	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 )
 
-var (
-	FinalizerName = "ctf.backbone81/challenge-instance"
-)
+var FinalizerName = "ctf.backbone81/challenge-instance"
 
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances/status,verbs=get;update;patch

@@ -2,17 +2,15 @@ package apikey
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"crypto/rand"
-	"encoding/hex"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 )

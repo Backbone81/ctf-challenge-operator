@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/backbone81/ctf-challenge-operator/internal/controller"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
+	"github.com/backbone81/ctf-challenge-operator/internal/controller"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 

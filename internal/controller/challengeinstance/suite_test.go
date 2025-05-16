@@ -2,16 +2,15 @@ package challengeinstance_test
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
-	"math/rand"
+	"math/big"
 	"testing"
 
-	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
-
-	"k8s.io/client-go/kubernetes/scheme"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
@@ -20,8 +19,8 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 )
 
 var (
@@ -50,7 +49,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
+	k8sClient, err = client.New(cfg, client.Options{Scheme: clientgoscheme.Scheme})
 	Expect(err).NotTo(HaveOccurred())
 	Expect(k8sClient).NotTo(BeNil())
 	k8sClient = utils.NewLoggingClient(k8sClient, logger)
@@ -75,7 +74,10 @@ func GenerateName(prefix string) string {
 	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
 	suffix := make([]byte, 5)
 	for i := range suffix {
-		suffix[i] = charset[rand.Intn(len(charset))]
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		Expect(err).ToNot(HaveOccurred())
+
+		suffix[i] = charset[n.Int64()]
 	}
 	return fmt.Sprintf("%s%s", prefix, string(suffix))
 }

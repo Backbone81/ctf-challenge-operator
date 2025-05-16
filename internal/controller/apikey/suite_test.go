@@ -4,8 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
-
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
@@ -15,6 +13,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
+	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 

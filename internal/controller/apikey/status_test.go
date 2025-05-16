@@ -3,8 +3,6 @@ package apikey_test
 import (
 	"time"
 
-	"github.com/backbone81/ctf-challenge-operator/internal/controller/apikey"
-
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
@@ -14,6 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
+	"github.com/backbone81/ctf-challenge-operator/internal/controller/apikey"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 

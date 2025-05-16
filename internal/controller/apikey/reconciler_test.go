@@ -1,9 +1,10 @@
 package apikey_test
 
 import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/apikey"

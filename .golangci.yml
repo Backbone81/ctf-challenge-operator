@@ -1,47 +1,115 @@
-run:
-  timeout: 5m
-  allow-parallel-runners: true
+# yaml-language-server: $schema=https://golangci-lint.run/jsonschema/golangci.jsonschema.json
+version: "2"
 
-issues:
-  # don't skip warning about doc comments
-  # don't exclude the default set of lint
-  exclude-use-default: false
-  # restore some of the defaults
-  # (fill in the rest as needed)
-  exclude-rules:
-    - path: "api/*"
-      linters:
-        - lll
-    - path: "internal/*"
-      linters:
-        - dupl
-        - lll
 linters:
-  disable-all: true
+  default: none
   enable:
-    - dupl
-    - errcheck
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - containedctx
+    - contextcheck
     - copyloopvar
+    - cyclop
+    - decorder
+    - dogsled
+    - dupl
+    - dupword
+    - durationcheck
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - exptostd
+    - fatcontext
+    - forbidigo
+    - forcetypeassert
+    - funlen
     - ginkgolinter
+    - gocheckcompilerdirectives
+    - gochecksumtype
+    - gocognit
     - goconst
+    - gocritic
     - gocyclo
-    - gofmt
-    - goimports
-    - gosimple
+    - godot
+    - godox
+    - goheader
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - gosmopolitan
     - govet
+    - grouper
+    - iface
+    - importas
+    - inamedparam
     - ineffassign
-    - lll
+    - interfacebloat
+    - intrange
+    - loggercheck
+    - maintidx
+    - makezero
+    - mirror
     - misspell
+    - musttag
     - nakedret
+    - nestif
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - noctx
+    - nolintlint
+    - nonamedreturns
+    - nosprintfhostport
+    - perfsprint
     - prealloc
-    - revive
+    - predeclared
+    - promlinter
+    - protogetter
+    - reassign
+    - recvcheck
+    - rowserrcheck
+    - sloglint
+    - spancheck
+    - sqlclosecheck
     - staticcheck
-    - typecheck
+    - tagalign
+    - tagliatelle
+    - testableexamples
+    - testifylint
+    - testpackage
+    - thelper
+    - tparallel
     - unconvert
     - unparam
     - unused
-
-linters-settings:
-  revive:
+    - usestdlibvars
+    - usetesting
+    - varnamelen
+    - wastedassign
+    - whitespace
+    - zerologlint
+  exclusions:
     rules:
-      - name: comment-spacings
+      - path: _test\.go
+        linters:
+          - dupl
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - dot
+        - localmodule
