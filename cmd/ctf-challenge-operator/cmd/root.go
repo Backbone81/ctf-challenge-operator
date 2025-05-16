@@ -24,6 +24,9 @@ var (
 	leaderElectionEnabled   bool
 	leaderElectionNamespace string
 	leaderElectionId        string
+
+	kubernetesClientQPS   float32
+	kubernetesClientBurst int
 )
 
 var rootCmd = &cobra.Command{
@@ -47,6 +50,8 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("setting up kubernetes config: %w", err)
 		}
+		restConfig.QPS = kubernetesClientQPS
+		restConfig.Burst = kubernetesClientBurst
 		mgr, err := ctrl.NewManager(
 			restConfig,
 			ctrl.Options{
@@ -110,6 +115,11 @@ func init() {
 		"How verbose the logs are. Level 0 will show info, warning and error. Level 1 and up will show increasing details.",
 	)
 
+	initControllerRuntime()
+	initKubernetesClient()
+}
+
+func initControllerRuntime() {
 	rootCmd.PersistentFlags().StringVar(
 		&metricsBindAddress,
 		"metrics-bind-address",
@@ -141,6 +151,21 @@ func init() {
 		"leader-election-id",
 		"ctf-challenge-operator",
 		"The ID to use for leader election.",
+	)
+}
+
+func initKubernetesClient() {
+	rootCmd.PersistentFlags().Float32Var(
+		&kubernetesClientQPS,
+		"kubernetes-client-qps",
+		5.0,
+		"The number of queries per second the Kubernetes client is allowed to send against the Kubernetes API.",
+	)
+	rootCmd.PersistentFlags().IntVar(
+		&kubernetesClientBurst,
+		"kubernetes-client-burst",
+		10,
+		"The number of burst queries the Kubernetes client is allowed to send against the Kubernetes API.",
 	)
 }
 
