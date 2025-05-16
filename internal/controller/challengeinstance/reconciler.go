@@ -18,7 +18,12 @@ var (
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengeinstances/finalizers,verbs=update
+
+// +kubebuilder:rbac:groups=core.ctf.backbone81,resources=challengedescriptions,verbs=get;list;watch
+
+// +kubebuilder:rbac:groups="",resources=namespaces,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
+// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 
 // Reconciler provides functionality for provisioning challenge instances.
 type Reconciler struct {

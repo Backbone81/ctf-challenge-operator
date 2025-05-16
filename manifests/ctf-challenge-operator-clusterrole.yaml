@@ -12,6 +12,30 @@ rules:
       - create
       - patch
   - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
       - core.ctf.backbone81
     resources:
       - apikeys
@@ -40,3 +64,11 @@ rules:
       - get
       - patch
       - update
+  - apiGroups:
+      - core.ctf.backbone81
+    resources:
+      - challengedescriptions
+    verbs:
+      - get
+      - list
+      - watch

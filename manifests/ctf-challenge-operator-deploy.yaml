@@ -7,7 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: ctf-challenge-operator
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: ctf-challenge-operator
@@ -50,15 +50,15 @@ spec:
               memory: 128Mi
           startupProbe:
             httpGet:
-              path: /ready
+              path: /readyz
               port: health
           readinessProbe:
             httpGet:
-              path: /ready
+              path: /readyz
               port: health
           livenessProbe:
             httpGet:
-              path: /health
+              path: /healthz
               port: health
           ports:
             - name: metrics

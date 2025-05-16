@@ -53,6 +53,21 @@ clean: ## Remove temporary files.
 	chmod -R ug+w tmp
 	rm -rf tmp
 	rm -f ctf-challenge-operator
+	kind delete cluster
+
+##@ Deployment
+
+.PHONY: init-local
+init-local:
+	kind create cluster --config=scripts/kind-config.yaml
+
+.PHONY: install
+install: lint ## Install CRDs into the K8s cluster specified in ~/.kube/config.
+	kubectl apply -f manifests/ctf-challenge-operator-crd.yaml
+
+.PHONY: uninstall
+uninstall: ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
+	kubectl delete -f manifests/ctf-challenge-operator-crd.yaml
 
 V1ALPHA1_DEEPCOPY_FILE := api/v1alpha1/zz_generated.deepcopy.go
 V1ALPHA1_TYPE_FILES := $(filter-out $(V1ALPHA1_DEEPCOPY_FILE), $(wildcard api/v1alpha1/*.go))
@@ -88,29 +103,3 @@ prepare: generate
 .PHONY: lint
 lint: prepare
 	golangci-lint run --fix
-
-# ========== legacy makefile starting from here ==========
-
-.PHONY: build-installer
-build-installer: generate ## Generate a consolidated YAML with CRDs and deployment.
-	mkdir -p dist
-	cd config/manager && kustomize edit set image controller=$(DOCKER_IMAGE)
-	kustomize build config/default > dist/install.yaml
-
-##@ Deployment
-
-.PHONY: install
-install: lint ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	kubectl apply -f manifests/ctf-challenge-operator-crd.yaml
-
-.PHONY: uninstall
-uninstall: ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
-	kubectl delete -f manifests/ctf-challenge-operator-crd.yaml
-
-.PHONY: deploy
-deploy: lint ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	kubectl apply -k manifests
-
-.PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
-	kubectl delete -k manifests
