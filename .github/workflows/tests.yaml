@@ -9,7 +9,7 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-24.04
     steps:
-      - name: Clone Code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Go

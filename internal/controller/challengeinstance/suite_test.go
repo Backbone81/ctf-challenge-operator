@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"path/filepath"
 	"testing"
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
@@ -43,7 +42,7 @@ var _ = BeforeSuite(func() {
 	ctrllog.SetLogger(logger)
 
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths:     []string{filepath.Join("config", "crd", "bases")},
+		CRDDirectoryPaths:     []string{"manifests/ctf-challenge-operator-crd.yaml"},
 		ErrorIfCRDPathMissing: true,
 		BinaryAssetsDirectory: "bin",
 	}
