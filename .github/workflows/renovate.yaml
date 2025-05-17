@@ -1,12 +1,14 @@
 name: Renovate
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 9 * * SAT'
 
 jobs:
   renovate:
     runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
