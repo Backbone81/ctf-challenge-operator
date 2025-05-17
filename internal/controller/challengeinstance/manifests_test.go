@@ -12,6 +12,7 @@ import (
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
+	"github.com/backbone81/ctf-challenge-operator/internal/testutils"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
@@ -28,7 +29,7 @@ var _ = Describe("ManifestsReconciler", func() {
 
 	It("should successfully create the manifests", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		configMapName := GenerateName("test-")
+		configMapName := testutils.GenerateName("test-")
 		configMap := corev1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: configMapName,
@@ -74,7 +75,7 @@ var _ = Describe("ManifestsReconciler", func() {
 		Expect(k8sClient.Create(ctx, &namespace)).To(Succeed())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -87,7 +88,7 @@ var _ = Describe("ManifestsReconciler", func() {
 
 	It("should succeed if the manifests are already there", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		configMapName := GenerateName("test-")
+		configMapName := testutils.GenerateName("test-")
 		configMap := corev1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: configMapName,
@@ -135,7 +136,7 @@ var _ = Describe("ManifestsReconciler", func() {
 		Expect(k8sClient.Create(ctx, &configMap)).To(Succeed())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -154,7 +155,7 @@ var _ = Describe("ManifestsReconciler", func() {
 				Namespace:    corev1.NamespaceDefault,
 			},
 			Spec: v1alpha1.ChallengeInstanceSpec{
-				ChallengeDescriptionName: GenerateName("not-existing-"),
+				ChallengeDescriptionName: testutils.GenerateName("not-existing-"),
 			},
 		}
 		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
@@ -168,7 +169,7 @@ var _ = Describe("ManifestsReconciler", func() {
 		Expect(k8sClient.Create(ctx, &namespace)).To(Succeed())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).To(HaveOccurred())
 		Expect(result).To(BeZero())
 	})
@@ -212,14 +213,14 @@ var _ = Describe("ManifestsReconciler", func() {
 		Expect(k8sClient.Create(ctx, &namespace)).To(Succeed())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).To(HaveOccurred())
 		Expect(result).To(BeZero())
 	})
 
 	It("should not create the manifests when the instance is deleted", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		configMapName := GenerateName("test-")
+		configMapName := testutils.GenerateName("test-")
 		configMap := corev1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: configMapName,
@@ -271,7 +272,7 @@ var _ = Describe("ManifestsReconciler", func() {
 		Expect(k8sClient.Create(ctx, &namespace)).To(Succeed())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 

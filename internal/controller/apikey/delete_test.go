@@ -12,6 +12,7 @@ import (
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/apikey"
+	"github.com/backbone81/ctf-challenge-operator/internal/testutils"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
@@ -42,7 +43,7 @@ var _ = Describe("DeleteReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time.Before(time.Now())).To(BeTrue())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -66,10 +67,10 @@ var _ = Describe("DeleteReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time.Before(time.Now())).To(BeFalse())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).ToNot(BeZero())
-		Expect(result.RequeueAfter).To(BeNumerically("~", time.Minute, utils.DurationEpsilon))
+		Expect(result.RequeueAfter).To(BeNumerically("~", time.Minute, testutils.DurationEpsilon))
 
 		By("verify all postconditions")
 		Expect(k8sClient.Get(ctx, client.ObjectKeyFromObject(&instance), &instance)).To(Succeed())
@@ -82,7 +83,7 @@ var _ = Describe("DeleteReconciler", func() {
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
-					utils.DoNotDeleteFinalizerName,
+					testutils.DoNotDeleteFinalizerName,
 				},
 			},
 		}
@@ -96,7 +97,7 @@ var _ = Describe("DeleteReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time.Before(time.Now())).To(BeTrue())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 

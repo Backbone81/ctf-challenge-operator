@@ -11,6 +11,7 @@ import (
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
+	"github.com/backbone81/ctf-challenge-operator/internal/testutils"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
@@ -38,7 +39,7 @@ var _ = Describe("AddFinalizerReconciler", func() {
 		Expect(controllerutil.ContainsFinalizer(&instance, challengeinstance.FinalizerName)).To(BeFalse())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -63,7 +64,7 @@ var _ = Describe("AddFinalizerReconciler", func() {
 		Expect(controllerutil.ContainsFinalizer(&instance, challengeinstance.FinalizerName)).To(BeTrue())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -79,7 +80,7 @@ var _ = Describe("AddFinalizerReconciler", func() {
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
-					utils.DoNotDeleteFinalizerName,
+					testutils.DoNotDeleteFinalizerName,
 				},
 			},
 		}
@@ -90,7 +91,7 @@ var _ = Describe("AddFinalizerReconciler", func() {
 		Expect(controllerutil.ContainsFinalizer(&instance, challengeinstance.FinalizerName)).To(BeFalse())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 

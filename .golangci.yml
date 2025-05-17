@@ -99,7 +99,6 @@ linters:
       - path: _test\.go
         linters:
           - dupl
-
 formatters:
   enable:
     - gci

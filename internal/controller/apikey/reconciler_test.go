@@ -8,6 +8,7 @@ import (
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/apikey"
+	"github.com/backbone81/ctf-challenge-operator/internal/testutils"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
@@ -31,7 +32,7 @@ var _ = Describe("APIKey Reconciler", func() {
 		}
 		Expect(k8sClient.Create(ctx, &apiKey)).To(Succeed())
 
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&apiKey))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&apiKey))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).ToNot(BeZero())
 	})

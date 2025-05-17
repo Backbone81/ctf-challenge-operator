@@ -14,6 +14,7 @@ import (
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
+	"github.com/backbone81/ctf-challenge-operator/internal/testutils"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
@@ -30,7 +31,7 @@ var _ = Describe("Reconciler", func() {
 
 	It("should successfully reconcile the resource", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		configMapName := GenerateName("test-")
+		configMapName := testutils.GenerateName("test-")
 		configMap := corev1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: configMapName,
@@ -69,12 +70,12 @@ var _ = Describe("Reconciler", func() {
 		Expect(instance.Spec.ChallengeDescriptionName).ToNot(BeZero())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result.RequeueAfter).To(BeNumerically(
 			"~",
 			time.Duration(challengeinstance.DefaultExpirationSeconds)*time.Second,
-			utils.DurationEpsilon,
+			testutils.DurationEpsilon,
 		))
 
 		By("verify all postconditions")

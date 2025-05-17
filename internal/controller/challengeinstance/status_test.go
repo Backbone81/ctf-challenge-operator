@@ -13,6 +13,7 @@ import (
 
 	"github.com/backbone81/ctf-challenge-operator/api/v1alpha1"
 	"github.com/backbone81/ctf-challenge-operator/internal/controller/challengeinstance"
+	"github.com/backbone81/ctf-challenge-operator/internal/testutils"
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
@@ -39,7 +40,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp).To(BeZero())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -48,7 +49,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			time.Now().Add(time.Duration(challengeinstance.DefaultExpirationSeconds)*time.Second),
-			utils.DurationEpsilon,
+			testutils.DurationEpsilon,
 		))
 	})
 
@@ -68,7 +69,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp).To(BeZero())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -77,7 +78,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			time.Now().Add(time.Duration(customExpirationSeconds)*time.Second),
-			utils.DurationEpsilon,
+			testutils.DurationEpsilon,
 		))
 	})
 
@@ -97,7 +98,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp).ToNot(BeZero())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
@@ -106,7 +107,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp.Time).To(BeTemporally(
 			"~",
 			customExpirationTimestamp.Time,
-			utils.DurationEpsilon,
+			testutils.DurationEpsilon,
 		))
 	})
 
@@ -117,7 +118,7 @@ var _ = Describe("StatusReconciler", func() {
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 				Finalizers: []string{
-					utils.DoNotDeleteFinalizerName,
+					testutils.DoNotDeleteFinalizerName,
 				},
 			},
 		}
@@ -127,7 +128,7 @@ var _ = Describe("StatusReconciler", func() {
 		Expect(instance.Status.ExpirationTimestamp).To(BeZero())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, utils.RequestFromObject(&instance))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).To(BeZero())
 
