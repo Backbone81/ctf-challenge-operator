@@ -20,6 +20,10 @@
   "fetchChangeLogs": "off",
   "packageRules": [
     {
+      "matchPaths": [".github/workflows/**"],
+      "enabled": false
+    },
+    {
       "groupName": "Major Versions",
       "matchUpdateTypes": ["major"]
     },
