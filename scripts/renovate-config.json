@@ -20,7 +20,7 @@
   "fetchChangeLogs": "off",
   "packageRules": [
     {
-      "matchPaths": [".github/workflows/**"],
+      "matchFileNames": [".github/workflows/**"],
       "enabled": false
     },
     {
@@ -41,7 +41,7 @@
     {
       "matchDatasources": ["go"],
       "matchPackageNames": [
-        "k8s.io/controller-runtime"
+        "sigs.k8s.io/controller-runtime"
       ],
       "allowedVersions": "< 0.20.0"
     },
