@@ -9,6 +9,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// Reconciler is a generalization of a top level reconciler. The type parameter should be a pointer to the kubernetes
+// data type this reconciler will reconcile. Every reconcile event is then forwarded to all sub reconcilers.
 type Reconciler[T client.Object] struct {
 	client         client.Client
 	subReconcilers []SubReconciler[T]

@@ -11,7 +11,7 @@ import (
 )
 
 // Reconciler is the main reconciler of this operator. It is responsible for registering and running all
-// sub-reconcilers.
+// top level reconcilers.
 type Reconciler struct {
 	client         client.Client
 	subReconcilers []SubReconciler

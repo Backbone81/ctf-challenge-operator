@@ -1,6 +1,7 @@
 package apikey_test
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -24,14 +25,16 @@ var _ = Describe("APIKey Reconciler", func() {
 	})
 
 	It("should successfully reconcile the resource", func(ctx SpecContext) {
+		By("prepare test with all preconditions")
 		apiKey := v1alpha1.APIKey{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test",
-				Namespace:    "default",
+				Namespace:    corev1.NamespaceDefault,
 			},
 		}
 		Expect(k8sClient.Create(ctx, &apiKey)).To(Succeed())
 
+		By("run the reconciler")
 		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&apiKey))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).ToNot(BeZero())

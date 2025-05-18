@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/onsi/gomega"
+	. "github.com/onsi/gomega" //nolint:staticcheck // Dot imports are fine for testutils.
 )
 
 // GenerateName simulates the behavior of Kubernetes GenerateName for test situations where we need to know the name
@@ -15,7 +15,7 @@ func GenerateName(prefix string) string {
 	suffix := make([]byte, 5)
 	for i := range suffix {
 		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
-		gomega.Expect(err).ToNot(gomega.HaveOccurred())
+		Expect(err).ToNot(HaveOccurred())
 
 		suffix[i] = charset[n.Int64()]
 	}

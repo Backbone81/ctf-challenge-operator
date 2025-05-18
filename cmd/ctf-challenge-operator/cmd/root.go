@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
@@ -15,7 +18,6 @@ import (
 )
 
 var (
-	cfgFile             string
 	enableDeveloperMode bool
 	logLevel            int
 
@@ -96,14 +98,10 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(func() {
+		cobra.CheckErr(bindFlagsToViper(rootCmd))
+	})
 
-	rootCmd.PersistentFlags().StringVar(
-		&cfgFile,
-		"config",
-		"",
-		"config file (default is $HOME/.ctf-challenge-operator.yaml)",
-	)
 	rootCmd.PersistentFlags().BoolVar(
 		&enableDeveloperMode,
 		"enable-developer-mode",
@@ -171,21 +169,19 @@ func initKubernetesClient() {
 	)
 }
 
-func initConfig() {
-	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
-	} else {
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".ctf-challenge-operator")
-	}
-
+func bindFlagsToViper(cmd *cobra.Command) error {
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	if err := viper.BindPFlags(cmd.Flags()); err != nil {
+		return fmt.Errorf("binding cobra flags to viper: %w", err)
 	}
+
+	var resultErr error
+	cmd.Flags().VisitAll(func(flag *pflag.Flag) {
+		if err := cmd.Flags().Set(flag.Name, fmt.Sprint(viper.Get(flag.Name))); err != nil {
+			resultErr = errors.Join(resultErr, err)
+		}
+	})
+	return resultErr
 }

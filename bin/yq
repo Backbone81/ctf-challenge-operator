@@ -3,9 +3,11 @@ set -e
 
 VERSION=v4.45.2
 
+# Get the name and location of this script.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 SCRIPT_NAME="$( basename "${BASH_SOURCE[0]}" )"
 
+# Specify the installation target location.
 BIN_DIR="${SCRIPT_DIR}/../tmp"
 BIN_NAME="${SCRIPT_NAME}"
 BIN_PATH="${BIN_DIR}/${BIN_NAME}"

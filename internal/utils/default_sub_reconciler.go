@@ -5,6 +5,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// DefaultSubReconciler provides fields and methods which are needed for all sub reconcilers. This struct is intended
+// to be embedded into the concrete sub reconciler.
 type DefaultSubReconciler struct {
 	client client.Client
 }

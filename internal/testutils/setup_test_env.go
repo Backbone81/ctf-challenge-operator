@@ -7,12 +7,14 @@ import (
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	. "github.com/onsi/ginkgo/v2" //nolint:staticcheck
-	. "github.com/onsi/gomega"    //nolint:staticcheck
+	. "github.com/onsi/ginkgo/v2" //nolint:staticcheck // Dot imports are fine for testutils.
+	. "github.com/onsi/gomega"    //nolint:staticcheck // Dot imports are fine for testutils.
 
 	"github.com/backbone81/ctf-challenge-operator/internal/utils"
 )
 
+// SetupTestEnv prepares envtest and a kubernetes client for interacting with the envtest instance. The client is
+// uncached.
 func SetupTestEnv() (*envtest.Environment, client.Client) {
 	Expect(MoveToProjectRoot()).To(Succeed())
 	Expect(MakeBinDirAvailable()).To(Succeed())

@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// CreateLogger constructs a logger with the given log level and formats the output for humans when developer mode is
+// enabled.
 func CreateLogger(logLevel int, enableDeveloperMode bool) (logr.Logger, *zap.Logger, error) {
 	if enableDeveloperMode {
 		return createDevelopmentLogger(logLevel)

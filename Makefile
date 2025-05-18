@@ -54,7 +54,7 @@ clean: ## Remove temporary files.
 ##@ Deployment
 
 .PHONY: init-local
-init-local:
+init-local: ## Install the local kind cluster.
 	kind create cluster --config=scripts/kind-config.yaml
 
 .PHONY: install
