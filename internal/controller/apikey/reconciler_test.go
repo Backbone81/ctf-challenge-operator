@@ -26,16 +26,16 @@ var _ = Describe("APIKey Reconciler", func() {
 
 	It("should successfully reconcile the resource", func(ctx SpecContext) {
 		By("prepare test with all preconditions")
-		apiKey := v1alpha1.APIKey{
+		instance := v1alpha1.APIKey{
 			ObjectMeta: metav1.ObjectMeta{
 				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 			},
 		}
-		Expect(k8sClient.Create(ctx, &apiKey)).To(Succeed())
+		Expect(k8sClient.Create(ctx, &instance)).To(Succeed())
 
 		By("run the reconciler")
-		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&apiKey))
+		result, err := reconciler.Reconcile(ctx, testutils.RequestFromObject(&instance))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(result).ToNot(BeZero())
 	})
