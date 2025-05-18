@@ -28,7 +28,7 @@ var _ = Describe("APIKey Reconciler", func() {
 		By("prepare test with all preconditions")
 		apiKey := v1alpha1.APIKey{
 			ObjectMeta: metav1.ObjectMeta{
-				GenerateName: "test",
+				GenerateName: "test-",
 				Namespace:    corev1.NamespaceDefault,
 			},
 		}
