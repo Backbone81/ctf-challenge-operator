@@ -56,6 +56,7 @@ clean: ## Remove temporary files.
 .PHONY: init-local
 init-local: ## Install the local kind cluster.
 	kind create cluster --config=scripts/kind-config.yaml
+	$(MAKE) install
 
 .PHONY: install
 install: lint ## Install CRDs into the K8s cluster specified in ~/.kube/config.
