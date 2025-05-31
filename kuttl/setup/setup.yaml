@@ -1,0 +1,486 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/name: ctf-challenge-operator
+  name: ctf-challenge-operator
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.5
+  name: apikeys.core.ctf.backbone81
+spec:
+  group: core.ctf.backbone81
+  names:
+    kind: APIKey
+    listKind: APIKeyList
+    plural: apikeys
+    singular: apikey
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - format: date-time
+      jsonPath: .status.expirationTimestamp
+      name: Expiration
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: APIKey is the Schema for the apikeys API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: APIKeySpec defines the desired state of APIKey.
+            properties:
+              expirationSeconds:
+                description: ExpirationSeconds is the requested duration of validity
+                  of the API key.
+                format: int64
+                type: integer
+            type: object
+          status:
+            description: APIKeyStatus defines the observed state of APIKey.
+            properties:
+              expirationTimestamp:
+                description: ExpirationTimestamp is the time of expiration of the
+                  returned API key.
+                format: date-time
+                type: string
+              token:
+                description: Key is the opaque API key.
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.5
+  name: challengedescriptions.core.ctf.backbone81
+spec:
+  group: core.ctf.backbone81
+  names:
+    kind: ChallengeDescription
+    listKind: ChallengeDescriptionList
+    plural: challengedescriptions
+    singular: challengedescription
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.title
+      name: Title
+      type: string
+    - jsonPath: .spec.category
+      name: Category
+      type: string
+    - jsonPath: .spec.value
+      name: Value
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ChallengeDescription is the Schema for the challengedescriptions
+          API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ChallengeDescriptionSpec defines the desired state of ChallengeDescription.
+            properties:
+              category:
+                description: Category is the category this challenge belongs to.
+                type: string
+              description:
+                description: Description is the content of the challenge
+                minLength: 1
+                type: string
+              hints:
+                description: Hints provides a list of hints to help solve the challenge.
+                items:
+                  properties:
+                    cost:
+                      default: 0
+                      description: Cost is the number of points which are to be deducted
+                        from the overall score if this hint is being used.
+                      minimum: 0
+                      type: integer
+                    description:
+                      description: Description is the content of the hint.
+                      minLength: 1
+                      type: string
+                  required:
+                  - description
+                  type: object
+                type: array
+              manifests:
+                description: |-
+                  Manifests provide the Kubernetes manifests which should be created when a new instance of the challenge is
+                  requested. The manifests are placed in a dedicated namespace. The namespace provided in those manifests is
+                  overwritten.
+                items:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                minItems: 1
+                type: array
+              title:
+                description: Title is the name of the challenge
+                minLength: 1
+                type: string
+              value:
+                default: 0
+                description: Value is the number of points which are added upon solving
+                  the challenge.
+                minimum: 0
+                type: integer
+            required:
+            - description
+            - manifests
+            - title
+            type: object
+          status:
+            description: ChallengeDescriptionStatus defines the observed state of
+              ChallengeDescription.
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.5
+  name: challengeinstances.core.ctf.backbone81
+spec:
+  group: core.ctf.backbone81
+  names:
+    kind: ChallengeInstance
+    listKind: ChallengeInstanceList
+    plural: challengeinstances
+    singular: challengeinstance
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - format: date-time
+      jsonPath: .status.expirationTimestamp
+      name: Expiration
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ChallengeInstance is the Schema for the challengeinstances API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ChallengeInstanceSpec defines the desired state of ChallengeInstance.
+            properties:
+              challengeDescriptionName:
+                description: ChallengeDescriptionName is the name of the ChallengeDescription
+                  this challenge instance is related to.
+                type: string
+              expirationSeconds:
+                description: ExpirationSeconds is the requested duration of validity
+                  of the Challenge instance.
+                format: int64
+                type: integer
+            required:
+            - challengeDescriptionName
+            type: object
+          status:
+            description: ChallengeInstanceStatus defines the observed state of ChallengeInstance.
+            properties:
+              expirationTimestamp:
+                description: ExpirationTimestamp is the time of expiration of the
+                  challenge instance.
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: ctf-challenge-operator
+  name: ctf-challenge-operator
+  namespace: ctf-challenge-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/name: ctf-challenge-operator
+  name: ctf-challenge-operator
+  namespace: ctf-challenge-operator
+rules:
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ctf-challenge-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - core.ctf.backbone81
+  resources:
+  - apikeys
+  - challengeinstances
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - core.ctf.backbone81
+  resources:
+  - apikeys/finalizers
+  - challengeinstances/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - core.ctf.backbone81
+  resources:
+  - apikeys/status
+  - challengeinstances/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - core.ctf.backbone81
+  resources:
+  - challengedescriptions
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: ctf-challenge-operator
+  name: ctf-challenge-operator
+  namespace: ctf-challenge-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ctf-challenge-operator
+subjects:
+- kind: ServiceAccount
+  name: ctf-challenge-operator
+  namespace: ctf-challenge-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: ctf-challenge-operator
+  name: ctf-challenge-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ctf-challenge-operator
+subjects:
+- kind: ServiceAccount
+  name: ctf-challenge-operator
+  namespace: ctf-challenge-operator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: ctf-challenge-operator
+  name: ctf-challenge-operator
+  namespace: ctf-challenge-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ctf-challenge-operator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ctf-challenge-operator
+    spec:
+      containers:
+      - args:
+        - --metrics-bind-address=:3000
+        - --health-probe-bind-address=:3001
+        - --leader-election-enabled
+        - --leader-election-namespace=$(POD_NAMESPACE)
+        command:
+        - /ctf-challenge-operator
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: backbone81/ctf-challenge-operator:local
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: health
+        name: manager
+        ports:
+        - containerPort: 3000
+          name: metrics
+        - containerPort: 3001
+          name: health
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: health
+        resources:
+          limits:
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        startupProbe:
+          httpGet:
+            path: /readyz
+            port: health
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: ctf-challenge-operator
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ctf-challenge-operator-deny-all
+  namespace: ctf-challenge-operator
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress

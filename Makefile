@@ -10,6 +10,9 @@ DOCKER_IMAGE_REPOSITORY ?= backbone81/ctf-challenge-operator
 # The docker image containing repository and tag.
 DOCKER_IMAGE ?= $(DOCKER_IMAGE_REPOSITORY):$(DOCKER_IMAGE_TAG)
 
+# The log level to use when executing the operator locally.
+LOG_LEVEL ?= 0
+
 # We want to have our binaries in the bin subdirectory available. In addition we want them to have priority over
 # binaries somewhere else on the system.
 export PATH := $(CURDIR)/bin:$(PATH)
@@ -27,12 +30,16 @@ help: ## Display this help.
 
 .PHONY: run
 run: lint ## Run the operator on your host.
-	go run ./cmd/ctf-challenge-operator --enable-developer-mode --log-level 10
+	go run ./cmd/ctf-challenge-operator --enable-developer-mode --log-level $(LOG_LEVEL)
 
 .PHONY: test
 test: lint ## Run tests.
 	ginkgo run -p --race --coverprofile cover.out --output-dir ./tmp $(PACKAGE)
 	go tool cover -html=tmp/cover.out -o tmp/cover.html
+
+.PHONY: test-e2e
+test-e2e: docker-build kuttl/setup/setup.yaml ## Run end-to-end tests.
+	kubectl kuttl test --config kuttl/kuttl-test.yaml
 
 ##@ Build
 
@@ -88,8 +95,17 @@ manifests/kustomization.yaml: $(V1ALPHA1_CRD_FILE) $(V1ALPHA1_CLUSTERROLE_FILE) 
 	cd manifests && kustomize create --autodetect
 	for f in manifests/*.yaml; do yq --prettyPrint --inplace "$$f"; done
 
+kuttl/setup/setup.yaml: $(wildcard manifests/*.yaml)
+	# We copy the manifests into the tmp folder and modify the image tag there to prevent us from accidentally
+	# committing the modified kustomization in the manifests directory.
+	rm -rf tmp/manifests
+	mkdir -p tmp
+	cp -r manifests tmp/manifests
+	cd tmp/manifests && kustomize edit set image backbone81/ctf-challenge-operator=$(DOCKER_IMAGE)
+	kustomize build tmp/manifests > $@
+
 .PHONY: generate
-generate: $(V1ALPHA1_DEEPCOPY_FILE) $(V1ALPHA1_CRD_FILE) $(V1ALPHA1_CLUSTERROLE_FILE) manifests/kustomization.yaml
+generate: $(V1ALPHA1_DEEPCOPY_FILE) $(V1ALPHA1_CRD_FILE) $(V1ALPHA1_CLUSTERROLE_FILE) manifests/kustomization.yaml kuttl/setup/setup.yaml
 
 .PHONY: prepare
 prepare: generate

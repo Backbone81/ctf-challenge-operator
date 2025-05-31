@@ -22,7 +22,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: manager
-          image: backbone81/ctf-challenge-operator:local
+          image: backbone81/ctf-challenge-operator:v0.1.0
           command:
             - /ctf-challenge-operator
           args:

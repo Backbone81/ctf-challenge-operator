@@ -1,0 +1,9 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-challenge
+  namespace: challenge-instance-sample
+status:
+  readyReplicas: 1
+  replicas: 1
