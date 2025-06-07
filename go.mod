@@ -1,6 +1,6 @@
 module github.com/backbone81/ctf-challenge-operator
 
-go 1.23.9
+go 1.23.10
 
 godebug default=go1.23
 
