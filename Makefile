@@ -53,7 +53,8 @@ docker-build: ## Build the operator docker image.
 
 .PHONY: clean
 clean: ## Remove temporary files.
-	kind delete cluster
+	kind delete cluster --name kind
+	kind delete cluster --name kuttl-tests
 	chmod -R ug+w tmp
 	rm -rf tmp
 	rm -f ctf-challenge-operator
@@ -72,6 +73,8 @@ install: lint ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 .PHONY: uninstall
 uninstall: ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config.
 	kubectl delete -f manifests/ctf-challenge-operator-crd.yaml
+
+########## Internal Makefile targets following after this point ##########
 
 V1ALPHA1_DEEPCOPY_FILE := api/v1alpha1/zz_generated.deepcopy.go
 V1ALPHA1_TYPE_FILES := $(filter-out $(V1ALPHA1_DEEPCOPY_FILE), $(wildcard api/v1alpha1/*.go))
@@ -92,8 +95,8 @@ $(V1ALPHA1_CLUSTERROLE_FILE): $(V1ALPHA1_CONTROLLER_FILES)
 
 manifests/kustomization.yaml: $(V1ALPHA1_CRD_FILE) $(V1ALPHA1_CLUSTERROLE_FILE) $(filter-out manifests/kustomization.yaml, $(wildcard manifests/*.yaml))
 	rm -f $@
-	cd manifests && kustomize create --autodetect
 	for f in manifests/*.yaml; do yq --prettyPrint --inplace "$$f"; done
+	cd manifests && kustomize create --autodetect
 
 kuttl/setup/setup.yaml: $(wildcard manifests/*.yaml)
 	# We copy the manifests into the tmp folder and modify the image tag there to prevent us from accidentally

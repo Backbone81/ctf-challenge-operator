@@ -31,6 +31,11 @@ type ChallengeDescriptionSpec struct {
 	// +kubebuilder:validation:Optional
 	Hints []ChallengeHint `json:"hints"`
 
+	// Flag is the flag the user is expected to get.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Flag string `json:"flag"`
+
 	// Manifests provide the Kubernetes manifests which should be created when a new instance of the challenge is
 	// requested. The manifests are placed in a dedicated namespace. The namespace provided in those manifests is
 	// overwritten.

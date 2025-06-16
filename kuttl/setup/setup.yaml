@@ -138,6 +138,10 @@ spec:
                 description: Description is the content of the challenge
                 minLength: 1
                 type: string
+              flag:
+                description: Flag is the flag the user is expected to get.
+                minLength: 1
+                type: string
               hints:
                 description: Hints provides a list of hints to help solve the challenge.
                 items:
@@ -178,6 +182,7 @@ spec:
                 type: integer
             required:
             - description
+            - flag
             - manifests
             - title
             type: object

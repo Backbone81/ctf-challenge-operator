@@ -11,6 +11,7 @@ spec:
   hints:
     - description: This is some hint.
       cost: 10
+  flag: CTF{TestFlag}
   manifests:
     - apiVersion: apps/v1
       kind: Deployment

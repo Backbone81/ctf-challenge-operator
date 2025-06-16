@@ -48,6 +48,7 @@ var _ = Describe("Reconciler", func() {
 			Spec: v1alpha1.ChallengeDescriptionSpec{
 				Title:       "test",
 				Description: "test",
+				Flag:        "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,

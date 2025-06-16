@@ -46,6 +46,7 @@ var _ = Describe("ManifestsReconciler", func() {
 			Spec: v1alpha1.ChallengeDescriptionSpec{
 				Title:       "test",
 				Description: "test",
+				Flag:        "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,
@@ -105,6 +106,7 @@ var _ = Describe("ManifestsReconciler", func() {
 			Spec: v1alpha1.ChallengeDescriptionSpec{
 				Title:       "test",
 				Description: "test",
+				Flag:        "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,
@@ -184,6 +186,7 @@ var _ = Describe("ManifestsReconciler", func() {
 			Spec: v1alpha1.ChallengeDescriptionSpec{
 				Title:       "test",
 				Description: "test",
+				Flag:        "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: []byte(`{"kind":"NotExisting"}`),
@@ -237,6 +240,7 @@ var _ = Describe("ManifestsReconciler", func() {
 			Spec: v1alpha1.ChallengeDescriptionSpec{
 				Title:       "test",
 				Description: "test",
+				Flag:        "test",
 				Manifests: []runtime.RawExtension{
 					{
 						Raw: configMapRaw,
