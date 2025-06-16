@@ -27,7 +27,7 @@ This project provides three Kubernetes custom resource definitions to help with 
 To deploy this operator into your Kubernetes cluster:
 
 ```shell
-kubectl apply -k https://github.com/backbone81/ctf-challenge-operator/manifests?ref=v0.1.0
+kubectl apply -k https://github.com/backbone81/ctf-challenge-operator/manifests?ref=v0.2.0
 ```
 
 ### ChallengeDescription CR
