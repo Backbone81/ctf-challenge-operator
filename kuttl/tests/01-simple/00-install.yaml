@@ -6,6 +6,7 @@ metadata:
 spec:
   title: Demo Challenge
   description: This is a demo challenge.
+  flag: CTF{TestFlag}
   manifests:
     - apiVersion: apps/v1
       kind: Deployment
